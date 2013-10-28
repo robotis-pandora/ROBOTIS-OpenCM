@@ -1,0 +1,25 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+writeDword	KEYWORD2
+writeRaw	KEYWORD2
+readRaw	KEYWORD2
+bulkRead	KEYWORD2
+getBulkByte	KEYWORD2
+getBulkWord	KEYWORD2
+getBulkDword	KEYWORD2
+bulkWrite	KEYWORD2
+#######################################
+# Class (KEYWORD3)
+#######################################
+DynamixelPro	KEYWORD3
+DxlEx	KEYWORD3
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+#RC100_BTN_U		LITERAL1

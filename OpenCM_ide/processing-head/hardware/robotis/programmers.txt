@@ -1,0 +1,2 @@
+# [ROBOTIS] cm900 do not support external programmer in this program
+# If you want to use external programmer, we recommand ST-Link/V2 or J-Link and STM32 ST-Link Utility

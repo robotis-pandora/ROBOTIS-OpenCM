@@ -1,0 +1,28 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+readData	KEYWORD2
+writeData	KEYWORD2
+#######################################
+# Class (KEYWORD3)
+#######################################
+RC100	KEYWORD3
+Controller	KEYWORD3
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+RC100_BTN_U		LITERAL1
+RC100_BTN_D		LITERAL1
+RC100_BTN_L		LITERAL1
+RC100_BTN_R		LITERAL1
+RC100_BTN_1		LITERAL1
+RC100_BTN_2		LITERAL1
+RC100_BTN_3		LITERAL1
+RC100_BTN_4		LITERAL1
+RC100_BTN_5		LITERAL1
+RC100_BTN_6		LITERAL1

@@ -1,0 +1,48 @@
+Copyright (C) 2012 ROBOTIS, Co., Ltd.
+
+ ROBOTIS OpenCM License Notice
+
+THE ROBOTIS OpenCM SOFTWARE IS PROVIDED TO YOU "AS IS," AND WE MAKE NO EXPRESS OR IMPLIED WARRANTIES 
+WHATSOEVER WITH RESPECT TO ITS FUNCTIONALITY, OPERABILITY, OR USE, INCLUDING, WITHOUT LIMITATION, 
+ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR INFRINGEMENT. 
+WE EXPRESSLY DISCLAIM ANY LIABILITY WHATSOEVER FOR ANY DIRECT, INDIRECT, CONSEQUENTIAL, INCIDENTAL 
+OR SPECIAL DAMAGES, INCLUDING, WITHOUT LIMITATION, LOST REVENUES, LOST PROFITS, LOSSES RESULTING 
+FROM BUSINESS INTERRUPTION OR LOSS OF DATA, REGARDLESS OF THE FORM OF ACTION OR LEGAL THEORY 
+UNDER WHICH THE LIABILITY MAY BE ASSERTED, EVEN IF ADVISED OF THE POSSIBILITY OR LIKELIHOOD OF SUCH DAMAGES.
+
+By downloading the software, you agree to the specified terms.
+
+The OpenCM9.04’s hardware and software are open-source. Updated information please visit the link below.
+http://www.robotsource.org/xe/Circle_CM9_Developer_World
+The OpenCM series are based on Arduino and Maple Leafs board and honors the licenses of the creators of Arduino 
+and Maple Leafs.
+
+CREDITS
+ 1. The OpenCM9.04’s is based on Arduino 1.0.1 (http://www.arduino.cc/) and released under the GPL license.
+
+ 2. Arduino has been built around Processing and Wiring projects. Processing and Wiring are released under the GPL 
+and LGPL licenses. For more information about Processing and Wiring projects visit the links below
+
+ Processing project (http://www.processing.org)
+ Wiring project (http://www.wiring.org.co/) 
+
+ 2. The ROBOTIS OpenCM’s ARM compiler implements Code Sourcery G++ Lite for ARM EABI(2010q1-188) toolchain. 
+Code Sourcery G++ Lite for ARM EABI(2010q1-188) is released under the BSD and GPL licenses.
+
+ 3. The OpenCM9.04’s bootloader is built around STMicroelectronics’ stm32f10x_lib.
+
+ 4. The ROBOTIS OpenCM’s APIs are built around on Leaflabs (www.leaflabs.com) Maple board’s APIs. 
+Leaflabs is released under the MIT license. For more information visit the link below.
+
+ http://leaflabs.com/licensing/
+
+ 5. The ROBOTIS OpenCM’s Dynamixel APIs have been built around ROBOTIS’ Dynamixel SDK. 
+The ROBOTIS Dynamixel SDK is released under the LGPL license.
+
+ 6. The OpenCM9.04 and ROBOTIS OpenCM software’s serial communications implements the rxtx library. 
+  The rxtx library is released under the LGPL license. For more information please visit the link below.
+http://rxtx.qbang.org/wiki/index.php/Main_Page
+
+7. The OpenCM9.04 API Reference is based on Martin Mason CM-900 API Reference from Mount San Antonio College’s Physics 
+and Engineering Department. Martin Mason. We would like to extend our gratitude to Martin Mason for his contributions
+to the CM-9 series.
