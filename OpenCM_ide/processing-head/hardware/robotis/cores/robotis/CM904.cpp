@@ -72,20 +72,20 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
 	{GPIOA, TIMER1, NULL, 10, 3, ADCx}, /* D12/PA10 */
 	{GPIOB, TIMER4, NULL,  8, 3, ADCx}, /* D13/PB8 */
 	{GPIOB, TIMER4, NULL,  9, 4, ADCx}, /* D14/PB9 (LED)*/
-	{GPIOA,   NULL, NULL, 13, 0, ADCx}, /* D15/PA13 */
-	{GPIOA,   NULL, NULL, 14, 0, ADCx}, /* D16/PA14 */
-	{GPIOA,   NULL, NULL, 15, 0, ADCx}, /* D17/PA15 */
-	{GPIOB,   NULL, NULL,  3, 0, ADCx}, /* D18/PB3  */
-
-	{GPIOB,   NULL, NULL,  4, 0, ADCx}, /* D19/PB4  */
-	{GPIOB,   NULL, NULL, 12, 0, ADCx}, /* D20/PB12 */
-	{GPIOB,   NULL, NULL, 13, 0, ADCx}, /* D21/PB13 */
-	{GPIOB,   NULL, NULL, 14, 0, ADCx}, /* D22/PB14 */
-	{GPIOB,   NULL, NULL, 15, 0, ADCx}, /* D23/PB15 */
-	{GPIOC,   NULL, NULL, 14, 0, ADCx}, /* D24/PC14 */
-	{GPIOC,   NULL, NULL, 15, 0, ADCx}, /* D25/PC15 */
-	{GPIOB,   NULL, NULL, 10, 0, ADCx}, /* D26/PB10 */
-	{GPIOB,   NULL, NULL, 11, 0, ADCx}, /* D27/PB11 */
+//	{GPIOA,   NULL, NULL, 13, 0, ADCx}, /* D15/PA13 */
+//	{GPIOA,   NULL, NULL, 14, 0, ADCx}, /* D16/PA14 */
+	{GPIOA,   NULL, NULL, 15, 0, ADCx}, /* D15/PA15 */
+	{GPIOB,   NULL, NULL,  3, 0, ADCx}, /* D16/PB3  */
+	{GPIOB,   NULL, NULL,  4, 0, ADCx}, /* D17/PB4  */
+	{GPIOB,   NULL, NULL, 12, 0, ADCx}, /* D18/PB12 */	
+	{GPIOB,   NULL, NULL, 13, 0, ADCx}, /* D19/PB13 */
+	
+	{GPIOB,   NULL, NULL, 14, 0, ADCx}, /* D20/PB14 */
+	{GPIOB,   NULL, NULL, 15, 0, ADCx}, /* D21/PB15 */
+	{GPIOC,   NULL, NULL, 14, 0, ADCx}, /* D22/PC14 */
+	{GPIOC,   NULL, NULL, 15, 0, ADCx}, /* D23/PC15 (User Button)*/
+	{GPIOB,   NULL, NULL, 10, 0, ADCx}, /* D24/PB10 */
+	{GPIOB,   NULL, NULL, 11, 0, ADCx}, /* D25/PB11 */
 
 };
 /**
