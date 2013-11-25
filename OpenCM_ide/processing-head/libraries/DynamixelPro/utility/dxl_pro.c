@@ -10,11 +10,37 @@
 
 usart_dev *gDynamixelUsartDev = NULL;
 
-/* gbpRxBuffer    gbDXLWritePointer
-extern uint32 Dummy(uint32 tmp);
-extern void uDelay(uint32 uTime);
-extern void nDelay(uint32 nTime);*/
+uint32 Dummy(uint32 tmp){
+	return tmp;
+}
 
+void uDelay(uint32 uTime) {
+	uint32 cnt, max;
+	static uint32 tmp = 0;
+
+	for( max=0; max < uTime; max++)
+	{
+		for( cnt=0; cnt < 10 ; cnt++ )
+		{
+			tmp +=Dummy(cnt);
+		}
+	}
+	//tmpdly = tmp;
+}
+void nDelay(uint32 nTime) { //100ns
+	uint32 cnt, max;
+	cnt=0;
+	static uint32 tmp = 0;
+
+	for( max=0; max < nTime; max++)
+	{
+		//for( cnt=0; cnt < 10 ; cnt++ )
+		//{
+			tmp +=Dummy(cnt);
+		//}
+	}
+	//tmpdly = tmp;
+}
 #ifdef CM9_DEBUG
 
 

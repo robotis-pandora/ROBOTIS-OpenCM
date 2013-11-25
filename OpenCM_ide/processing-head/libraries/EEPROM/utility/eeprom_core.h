@@ -1,3 +1,5 @@
+/******************* (C) COPYRIGHT 2011 STMicroelectronics **************************/
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __EEPROM_H
 #define __EEPROM_H
@@ -19,19 +21,8 @@ extern "C" {
    be done by word  */
 //#define VOLTAGE_RANGE           (uint8_t)VoltageRange_3
 
-/* EEPROM start address in Flash */
-#if defined(BOARD_CM900) || defined(BOARD_CM900_REV10)
-#define EEPROM_START_ADDRESS  ((u32)0x0800F800) /*EEPROM emulation start address:
-                                                  from sector2 : after 16KByte of used
-                                                  Flash memory */
-#elif defined(BOARD_CM904)
-#define EEPROM_START_ADDRESS  ((u32)0x0801F800) /*EEPROM emulation start address:
-                                                  from sector2 : after 16KByte of used 
-                                                  Flash memory */
 
-#else
-#error ("Sorry! No board was selected for using EEPROM ")
-#endif
+#define EEPROM_START_ADDRESS  ((u32)0x0800F800)
 
 /* Pages 0 and 1 base and end addresses */
 #define PAGE0_BASE_ADDRESS    ((u32)(EEPROM_START_ADDRESS + 0x0000))

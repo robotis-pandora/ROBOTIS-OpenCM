@@ -51,7 +51,6 @@
 
 //[ROBOTIS]add to support dynamixel that is super powered robot actuator
 #include "Dynamixel.h"
-#include "Dynamixel3.h"
 #include "Arduino-compatibles.h" //we need to decrease object files for shortening download time.
 
 /* Arduino wiring macros and bit defines  */

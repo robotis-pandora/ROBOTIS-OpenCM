@@ -1,98 +1,50 @@
-
-/************************* (C) COPYRIGHT 2010 ROBOTIS *************************
-* File Name          : dynamixel.h
-* Author             : danceww
-* Version            : V0.1
-* Date               : 2010/08/26
-* Description        : This file contains the dynamixel communication function.
-                       for the firmware.
-*******************************************************************************/
-/* Copyright (C) 2013 ROBOTIS, Co., Ltd.
+/*
+ * dxl2.h
  *
- * @File: dxl.h ( <- dynamixel.h )
- * @Brief : ported dynamixel SDK from CM-530 firmware for CM-9XX series
- *
+ *  Created on: 2013. 11. 8.
+ *      Author: in2storm
  */
-#ifndef DXL_H_
-#define DXL_H_
 
-
+#ifndef DXL2_H_
+#define DXL2_H_
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* Includes ------------------------------------------------------------------*/
-#include "libpandora_types.h"
-#include "gpio.h"
 #include "usart.h"
-#include "usb_type.h"
+#include "gpio.h"
 #include "dxl_constants.h"
 
-/* Debug defines ------------------------------------------------------------*/
-#ifdef CM9_DEBUG
-//#define PRINT_OUT_PACKET_TO_USART2
-//#define PRINT_OUT_COMMUNICATION_ERROR_TO_USART2
-//#define PRINT_OUT_TRACE_ERROR_PRINT_TO_USART2
-#endif
 
-/* Exported types ------------------------------------------------------------*/
+/** DYNAMIXEL device type  */
+#define DXL_RX_BUF_SIZE 256
+#define DXL_PARAMETER_BUF_SIZE 128
 
-
-#define TxD8Dec TxDHex8C
-#define TXD_STRING(FPTR) TxDStringC(FPTR)
-#define TxD8 TxDByteC
-
-/*Global Variables ----------------------------------------------------------------------------------------------*/
-volatile byte  gbDXLWritePointer;
-volatile byte  gbDXLReadPointer;
-volatile byte  gbpDXLDataBuffer[256];
-
-volatile byte gbpParameter[130+10];
-volatile byte gbBusUsed;
-uint32 gbRxLength;
-byte gbpRxBuffer[255];
-byte gbpTxBuffer[255];
-
-uint8 gbIsDynmixelUsed; //[ROBOTIS]2012-12-13
-//Added by NaN
-uint8 gbDXLtxrxStatus;
-byte getTxRxStatus(void);
-
+typedef struct dxl_dev {
 /*
- * Raw methods for basic packet methods
- * */
-void clearBuffer256(void);
-byte checkNewArrive(void);
-void TxByteToDXL( byte bTxData);
-byte RxByteFromDXL(void);
+
+	gpio_dev *tx_port;      *< Maple pin's GPIO device
+	gpio_dev *rx_port;      *< Maple pin's GPIO device
+	gpio_dev *dir_port;      *< Maple pin's GPIO device
+
+	uint8 tx_pin;
+	uint8 rx_pin;
+	uint8 dir_pin;*/
+	uint8 write_pointer;
+	uint8 read_pointer;
+	uint8 data_buffer[DXL_RX_BUF_SIZE];
+	voidFuncPtrUart handlers;
+} dxl_dev;
+extern dxl_dev *DXL_DEV1;
+extern dxl_dev *DXL_DEV3;
 
 
-byte dxl_write_word(byte bID, byte bAddress, word wData);
-word dxl_read_word(byte bID, byte bAddress);
-byte dxl_read_byte(byte bID, byte bAddress);
-byte dxl_write_byte(byte bID, byte bAddress, byte bData);
-/*
- * Basic packet communications methods
- * */
-byte txrx_Packet(byte bID, byte bInst, byte bTxParaLen);
-byte tx_Packet(byte bID, byte bInstruction, byte bParameterLength);
-byte rx_Packet(byte bLength);
-/*
- *
- */
-/* for delay */
-uint32 Dummy(uint32 tmp);
-void uDelay(uint32 uTime);
-void nDelay(uint32 nTime);
+void dxlInterrupt2(byte data);
+void dxlInterrupt3(byte data);
 
-void dxlInterrupt(byte data);
 
-void TIM2_IRQHandler(void);
-void motion_play(word wPage);
+void PrintBuffer(byte *bpPrintBuffer, byte bLength);
 
 #ifdef __cplusplus
 }
 #endif
-
-
-#endif /* DXL_H_ */
+#endif /* DXL2_H_ */

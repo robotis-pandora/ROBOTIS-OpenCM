@@ -9,16 +9,14 @@
 #include "dxl_pro.h"
 #include "Arduino-compatibles.h"
 
-extern uint8 gbIsDynmixelUsed;
-extern uint8 gbIsDynmixelUsed3;
+
 extern usart_dev *gDynamixelUsartDev;
 
 DynamixelPro::DynamixelPro(int devNum) {
 	// TODO Auto-generated constructor stub
 
 	if(devNum == 1){ //USART1 case
-		if(gbIsDynmixelUsed == 1) //if Dxl is already used in USART1, fail to init DXL PRO
-			return;
+
 		gDynamixelUsartDev = USART1;
 
 
@@ -31,17 +29,13 @@ DynamixelPro::DynamixelPro(int devNum) {
 
 		//gDynamixelUsartDev = USART2;  //forbidden
 	}else if(devNum ==3 ){//USART3 case
-		if(gbIsDynmixelUsed3 == 1) //if Dxl is already used in USART1, fail to init DXL PRO
-			return;
+
 		gDynamixelUsartDev = USART3;
 
 
 
 	}else{
-		afio_remap(AFIO_REMAP_USART1);
 		gDynamixelUsartDev = USART1; // default is USART1
-
-
 	}
 
 }
@@ -56,8 +50,7 @@ void DynamixelPro::begin(int baud) {
 	uint32 Baudrate = 0;
 	//TxDString("[DXL]start begin\r\n");
 
-	if(gbIsDynmixelUsed == 1 || gbIsDynmixelUsed3 == 1 )
-		return;
+
 	if(gDynamixelUsartDev == USART1){
 		afio_remap(AFIO_REMAP_USART1);
 	}
@@ -204,7 +197,7 @@ word DynamixelPro::readWord(byte bID, int wAddress){
 		return(DXL_MAKEWORD(gbpRxBufferEx[9], gbpRxBufferEx[10]));
 	}else{
 		mResult = 0;
-		return 0xff;
+		return 0xffff;
 	}
 
 }
@@ -251,7 +244,7 @@ uint32 DynamixelPro::readDword( byte bID, int wAddress ){
 							 );
 	}else{
 		mResult = 0;
-		return 0xff;
+		return 0xffffffff;
 	}
 }
 
