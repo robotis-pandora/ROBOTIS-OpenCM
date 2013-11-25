@@ -318,24 +318,9 @@ static inline void usart_irq(usart_dev *dev) {
 #endif
 }
 
-extern volatile byte  gbDXLWritePointer;
-extern volatile byte  gbpDXLDataBuffer[256];
-extern uint8 gbIsDynmixelUsed; //[ROBOTIS]2012-12-13
-
-
 void __irq_usart1(void) {
 
-	//TxDByteC();
-	//TxDStringC("usart1 irq\r\n");
 	if ((USART1->regs->SR & USART_SR_RXNE) != (u16)RESET){
-
-		if(gbIsDynmixelUsed == 1){ // dynamixel case
-			if(gbDXLWritePointer > 255){//prevent buffer overflow, gbpDXLDataBuffer size is 256 bytes
-				clearBuffer256();
-			}
-			gbpDXLDataBuffer[gbDXLWritePointer++] = (uint8)USART1->regs->DR; //[ROBOTIS]Support to Dynamixel SDK.
-			return;
-		}
 		if(userUsartInterrupt1 != NULL){ // user interrupt
 			userUsartInterrupt1((byte)USART1->regs->DR);
 			return;
@@ -361,14 +346,17 @@ void __irq_usart2(void) {
 	}
 
 }
+extern volatile byte  gbDXLWritePointer3;
+extern volatile byte  gbpDXLDataBuffer3[256];
+extern uint8 gbIsDynmixelUsed3; //[ROBOTIS]2012-12-13
 
 void __irq_usart3(void) {
-	if ((USART3->regs->SR & USART_SR_RXNE) != (u16)RESET){
 
+	if ((USART3->regs->SR & USART_SR_RXNE) != (u16)RESET){
 		if(userUsartInterrupt3 != NULL){
-				userUsartInterrupt3((byte)USART3->regs->DR);
-				return;
-			}
+			userUsartInterrupt3((byte)USART3->regs->DR);
+			return;
+		}
 		usart_irq(USART3);
 	}
 
@@ -478,6 +466,7 @@ void TxDHex32C(u32 lSentData)
  */
 /* (Called from exc.S with global interrupts disabled.) */
 void __error(void) {
+	//TxDStringC("Exception occur \r\n");
 
 	//gpio_write_bit(GPIOB, 2, 0); // [ROBOTIS][CHANGE] 2013-04-22 just LED on when errors occur.
 

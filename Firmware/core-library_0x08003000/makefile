@@ -1,10 +1,6 @@
-#COMPILE_OPTS = -Os -g -mcpu=cortex-m3 -mthumb -march=armv7-m -nostdlib -ffunction-sections -fdata-sections -Wl,--gc-sections -DBOARD_CM900_REV10 -DMCU_STM32F103C8 -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG
-#COMPILEAS_OPTS = -mcpu=cortex-m3 -march=armv7-m -mthumb -DBOARD_CM900_REV10 -DMCU_STM32F103C8 -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG
-#COMPILECPP_OPTS = -Os -g -mcpu=cortex-m3 -mthumb -march=armv7-m -nostdlib -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-rtti -fno-exceptions -Wall -DBOARD_CM900_REV10 -DMCU_STM32F103C8 -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG 
-COMPILE_OPTS = -Os -g -mcpu=cortex-m3 -mthumb -march=armv7-m -nostdlib -ffunction-sections -fdata-sections -Wl,--gc-sections -DBOARD_CM904 -DMCU_STM32F103C8 -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG
-COMPILEAS_OPTS = -mcpu=cortex-m3 -march=armv7-m -mthumb -DBOARD_CM904 -DMCU_STM32F103C8 -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG
-COMPILECPP_OPTS = -Os -g -mcpu=cortex-m3 -mthumb -march=armv7-m -nostdlib -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-rtti -fno-exceptions -Wall -DBOARD_CM904 -DMCU_STM32F103C8 -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG
-
+COMPILE_OPTS = -Os -g -mcpu=cortex-m3 -mthumb -march=armv7-m -nostdlib -ffunction-sections -fdata-sections -Wl,--gc-sections -DBOARD_CM904 -DMCU_STM32F103CB -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG
+COMPILEAS_OPTS = -mcpu=cortex-m3 -march=armv7-m -mthumb -DBOARD_CM904 -DMCU_STM32F103CB -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG
+COMPILECPP_OPTS = -Os -g -mcpu=cortex-m3 -mthumb -march=armv7-m -nostdlib -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-rtti -fno-exceptions -Wall -DBOARD_CM904 -DMCU_STM32F103CB -DSTM32_MEDIUM_DENSITY -DVECT_TAB_FLASH -DCM9_DEBUG 
 INCLUDE_DIRS = -I . -I lib/inc
 LIBRARY_DIRS = -L
 
@@ -80,8 +76,6 @@ MAIN_OBJS = exc.o\
  lib/src/usb_serial.o \
  template.o \
  main.o \
- dxl_pro.o \
- DynamixelPro.o \
  OLLO.o	\
  bkp_core.o	\
  BKP.o	\
@@ -89,6 +83,8 @@ MAIN_OBJS = exc.o\
  EEPROM.o	\
  RC100.o	\
  rc100_core.o	\
+ dxl_pro.o	\
+ DynamixelPro.o	\
  lib/src/CM900.o \
  lib/src/CM904.o \
  lib/src/Dynamixel.o \

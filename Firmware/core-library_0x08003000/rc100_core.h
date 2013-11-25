@@ -8,7 +8,6 @@ extern "C" {
 
 #include "libpandora_types.h"
 #include "usb_type.h"
-#include "stm32.h"
 
 #define PACKET_DATA0    		2
 #define INVERSE_PACKET_DATA0 	3
@@ -25,7 +24,6 @@ volatile byte                   gbNewPacket;
 volatile word                   gwZigbeeRxData;
 
 
-
 int rc100_hal_tx( unsigned char *pPacket, int numPacket );
 int rc100_hal_rx( unsigned char *pPacket, int numPacket );
 
@@ -33,11 +31,14 @@ int rc100_hal_rx( unsigned char *pPacket, int numPacket );
 ///////////// device control methods ////////////////////////
 int rc100Initialize( uint32 baudrate );
 void rc100Terminate(void);
-
+byte CheckNewArrive(void);
 ////////// communication methods ///////////////////////
 int rc100TxData(int data);
 int rc100RxCheck(void);
 int rc100RxData(void);
+
+byte RxDByteUart2(void);
+void TxDByteUart2(byte bTxdData);
 
 #ifdef __cplusplus
 }

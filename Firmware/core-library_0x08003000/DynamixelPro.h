@@ -28,7 +28,7 @@ private:
 	byte usedDxlPro;
 	BulkData mBulkData[32]; //Maximum dxl pro number is 32
 public:
-	DynamixelPro();
+	DynamixelPro(int devNum);
 	virtual ~DynamixelPro();
 
 
@@ -77,6 +77,8 @@ public:
     int getBulkDword(int id,int addr);
 
     int bulkWrite(byte *param, int param_length);
+
+    byte getResult(void);
 
     /*
      * Dynamixel Pro Utility functions

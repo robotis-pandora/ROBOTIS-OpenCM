@@ -282,7 +282,6 @@ int OLLO::read(int devNum, int device_index){ // IR SENSOR, Button, MAGNETIC SEN
 			delayMicroseconds(15);
 			adcValue = analogRead(3);
 			digitalWrite(9, LOW);
-			return adcValue;
 		}else if(device_index == MAGNETIC_SENSOR || device_index == TOUCH_SENSOR ){
 			return digitalRead(3);
 		}else{
@@ -295,7 +294,6 @@ int OLLO::read(int devNum, int device_index){ // IR SENSOR, Button, MAGNETIC SEN
 			delayMicroseconds(15);
 			adcValue = analogRead(0);
 			digitalWrite(11, LOW);
-			return adcValue;
 		}else if(device_index == MAGNETIC_SENSOR || device_index == TOUCH_SENSOR ){
 			return digitalRead(0);
 		}else{
@@ -308,7 +306,6 @@ int OLLO::read(int devNum, int device_index){ // IR SENSOR, Button, MAGNETIC SEN
 			delayMicroseconds(15);
 			adcValue = analogRead(1);
 			digitalWrite(13, LOW);
-			return adcValue;
 		}else if(device_index == MAGNETIC_SENSOR || device_index == TOUCH_SENSOR ){
 			return digitalRead(1);
 		}else{

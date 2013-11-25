@@ -45,13 +45,13 @@
  * [ROBOTIS][CHANGE]2013-04-22 CM-900 Do not have built-in button.
  * 2013-08-03 CM-9.04 has built-in button -> inserted it again.
  * */
-#define BOARD_BUTTON_PIN        25//PC15
+#define BOARD_BUTTON_PIN        23//PC15
 #define BOARD_LED_PIN           14//PB9
 //#define BOOT1_PIN				28// added
 
 /* Total number of GPIO pins that are broken out to headers and
  * intended for general use. */
-#define BOARD_NR_GPIO_PINS      29//44
+#define BOARD_NR_GPIO_PINS      26//44
 
 /* Number of USARTs/UARTs whose pins are broken out to headers */
 //#define BOARD_NR_USARTS         3
@@ -61,8 +61,8 @@
 #define BOARD_USART1_RX_PIN     12	//D10(PA10)
 #define BOARD_USART2_TX_PIN     4	//D2 (PA2)
 #define BOARD_USART2_RX_PIN     5	//D3 (PA3)
-#define BOARD_USART3_TX_PIN     26	//D24 (PB10)
-#define BOARD_USART3_RX_PIN     27	//D25 (PB11)
+#define BOARD_USART3_TX_PIN     24	//D24 (PB10)
+#define BOARD_USART3_RX_PIN     25	//D25 (PB11)
 
 /* Number of SPI ports */
 //#define BOARD_NR_SPI            2
@@ -72,10 +72,10 @@
 #define BOARD_SPI1_MOSI_PIN     7 //D11 PA7
 #define BOARD_SPI1_MISO_PIN     6 //D12 PA6
 #define BOARD_SPI1_SCK_PIN      1 //D13 PA5
-#define BOARD_SPI2_NSS_PIN      20 //D26 PB12
-#define BOARD_SPI2_MOSI_PIN     23 //D29 PB15
-#define BOARD_SPI2_MISO_PIN     22 //D28 PB14
-#define BOARD_SPI2_SCK_PIN      21 //D27 PB13
+#define BOARD_SPI2_NSS_PIN      18 //D26 PB12
+#define BOARD_SPI2_MOSI_PIN     21 //D29 PB15
+#define BOARD_SPI2_MISO_PIN     20 //D28 PB14
+#define BOARD_SPI2_SCK_PIN      19 //D27 PB13
 
 void boardInit(void);
 

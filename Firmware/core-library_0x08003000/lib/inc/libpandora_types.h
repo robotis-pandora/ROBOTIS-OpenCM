@@ -48,8 +48,9 @@ typedef long long int64;
 /**
  * [ROBOTIS][START] support for Dynamixel SDK.
  * */
-#define word              uint16
-#define byte              uint8
+#define word			uint16
+#define byte			uint8
+#define dword			uint32
 /**
  * [ROBOTIS][END] support for Dynamixel SDK.
  * */

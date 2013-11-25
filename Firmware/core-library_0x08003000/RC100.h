@@ -20,6 +20,8 @@
 #define RC100_BTN_5		(256)
 #define RC100_BTN_6		(512)
 
+#include "libpandora_types.h"
+
 class RC100 {
 public:
 	RC100();
@@ -30,6 +32,9 @@ public:
 	int writeData(int data);
 	int available(void);
 	int readData(void);
+
+	void writeRaw(byte temp);
+	byte readRaw(void);
 };
 
 

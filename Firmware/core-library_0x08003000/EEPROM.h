@@ -17,6 +17,8 @@ public:
 	void begin();
 	void write(int vAddress, int data);
 	int read(int vAddress);
+	void erase(int page);
+	void eraseAll(void);
 
 };
 

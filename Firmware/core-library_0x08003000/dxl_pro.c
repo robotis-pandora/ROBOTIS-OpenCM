@@ -8,11 +8,39 @@
 #include "dxl_pro.h"
 
 
-/* gbpRxBuffer    gbDXLWritePointer
-extern uint32 Dummy(uint32 tmp);
-extern void uDelay(uint32 uTime);
-extern void nDelay(uint32 nTime);*/
+usart_dev *gDynamixelUsartDev = NULL;
 
+uint32 Dummy(uint32 tmp){
+	return tmp;
+}
+
+void uDelay(uint32 uTime) {
+	uint32 cnt, max;
+	static uint32 tmp = 0;
+
+	for( max=0; max < uTime; max++)
+	{
+		for( cnt=0; cnt < 10 ; cnt++ )
+		{
+			tmp +=Dummy(cnt);
+		}
+	}
+	//tmpdly = tmp;
+}
+void nDelay(uint32 nTime) { //100ns
+	uint32 cnt, max;
+	cnt=0;
+	static uint32 tmp = 0;
+
+	for( max=0; max < nTime; max++)
+	{
+		//for( cnt=0; cnt < 10 ; cnt++ )
+		//{
+			tmp +=Dummy(cnt);
+		//}
+	}
+	//tmpdly = tmp;
+}
 #ifdef CM9_DEBUG
 
 
@@ -175,10 +203,7 @@ void dxl_remove_stuffing(unsigned char * packet)
 }
 
 void dxlProInterrupt(byte data){
-	if(gbDXLWritePointerEx > 255){//prevent buffer overflow, gbpDXLDataBuffer size is 256 bytes
-		clearBuffer256Ex();
-	}
-	gbpDXLDataBufferEx[gbDXLWritePointerEx++] = (uint8)USART1->regs->DR; //[ROBOTIS]Support to Dynamixel SDK.
+	gbpDXLDataBufferEx[gbDXLWritePointerEx++ & 0x3FF] = (uint8)gDynamixelUsartDev->regs->DR; //[ROBOTIS]Support to Dynamixel SDK.
 
 }
 void clearBuffer256Ex(void){
@@ -194,15 +219,15 @@ byte checkNewArriveEx(void){
 void TxByteToDXLEx(byte bTxData){
 	//USART_SendData(USART1,bTxData);
 	//while( USART_GetFlagStatus(USART1, USART_FLAG_TC)==RESET );
-	USART1->regs->DR = (bTxData & (u16)0x01FF);
-	while( (USART1->regs->SR & ((u16)0x0040)) == RESET );
+	gDynamixelUsartDev->regs->DR = (bTxData & (u16)0x01FF);
+	while( (gDynamixelUsartDev->regs->SR & ((u16)0x0040)) == RESET );
 }
 byte RxByteFromDXLEx(void){
-	if(gbDXLWritePointerEx > 255){ // prevent exceptions
+/*	if(gbDXLWritePointerEx > 1023){ // prevent exceptions
 		clearBuffer256Ex();
 		return 0;
-	}
-	return gbpDXLDataBufferEx[gbDXLReadPointerEx++];
+	}*/
+	return gbpDXLDataBufferEx[gbDXLReadPointerEx++ & 0x3FF];
 }
 
 
@@ -484,16 +509,22 @@ byte tx_PacketEx(byte bID, byte bInstruction, word wParameterLength){
 
     wPacketLength += 2; //add crc length
 
-    DXL_TXD; // this define is declared in dxl_constants.h
-
+	if(gDynamixelUsartDev == USART1){
+		DXL_TXD
+	}else{
+		DXL_TXD3
+	}
 
     for(wCount = 0; wCount < wPacketLength; wCount++)
     {
         TxByteToDXLEx(gbpTxBufferEx[wCount]);
     }
 
-    DXL_RXD;// this define is declared in dxl_constants.h
-
+	if(gDynamixelUsartDev == USART1){
+		DXL_RXD
+	}else{
+		DXL_RXD3
+	}
 
 
     return(wPacketLength);

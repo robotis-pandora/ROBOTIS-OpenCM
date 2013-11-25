@@ -3,6 +3,7 @@
 #include "rc100_core.h"
 //#include "rc100_hal.h"
 #include "usart.h"
+//#include "stm32.h" //2013-06-17
 #include "gpio.h"
 
 unsigned char gbRcvPacket[6];
@@ -19,6 +20,8 @@ void TxDByteUart2(byte bTxdData)
 	*/
 	USART2->regs->DR = (bTxdData & (u16)0x01FF);
 	while( (USART2->regs->SR & ((u16)0x0040)) == RESET );
+
+
 }
 
 byte RxDByteUart2(void)
@@ -39,8 +42,9 @@ int rc100_hal_tx( unsigned char *pPacket, int numPacket )
 	// numPacket: number of data array
 	// Return: number of data transmitted. -1 is error.
 	unsigned char i;
-	for(i=0 ; i<numPacket; i++  )
+	for(i=0 ; i<numPacket; i++  ){
 		TxDByteUart2(pPacket[i]);
+	}
 
 	return numPacket;
 }
@@ -88,7 +92,6 @@ int rc100Initialize(uint32 baudrate )
  * */
 	gpio_set_mode(GPIOA, 2, GPIO_AF_OUTPUT_PP);
 	gpio_set_mode(GPIOA, 3, GPIO_INPUT_FLOATING);
-	
 	usart_init(USART2);
 	//TxDStringC("USART clock = ");TxDHex32C(STM32_PCLK2);TxDStringC("\r\n");
 	usart_set_baud_rate(USART2, STM32_PCLK1, baudrate);

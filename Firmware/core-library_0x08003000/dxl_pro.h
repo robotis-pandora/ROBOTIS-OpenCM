@@ -59,6 +59,7 @@ enum INSTRUCTION_EX {
 #define PING_STATUS_LENGTH  (14)
 #define MAX_ID              (252)
 
+#if 0 // move to original dxl codes(dxl_constants.h)
 ///////////////// utility for value ///////////////////////////
 #define DXL_MAKEWORD(a, b)      ((unsigned short)(((unsigned char)(((unsigned long)(a)) & 0xff)) | ((unsigned short)((unsigned char)(((unsigned long)(b)) & 0xff))) << 8))
 #define DXL_MAKEDWORD(a, b)     ((unsigned int)(((unsigned short)(((unsigned long)(a)) & 0xffff)) | ((unsigned int)((unsigned short)(((unsigned long)(b)) & 0xffff))) << 16))
@@ -66,14 +67,14 @@ enum INSTRUCTION_EX {
 #define DXL_HIWORD(l)           ((unsigned short)((((unsigned long)(l)) >> 16) & 0xffff))
 #define DXL_LOBYTE(w)           ((unsigned char)(((unsigned long)(w)) & 0xff))
 #define DXL_HIBYTE(w)           ((unsigned char)((((unsigned long)(w)) >> 8) & 0xff))
-
+#endif
 
 /*Global Variables ----------------------------------------------------------------------------------------------*/
 volatile byte  gbDXLWritePointerEx;
 volatile byte  gbDXLReadPointerEx;
-volatile byte  gbpDXLDataBufferEx[256];
+volatile byte  gbpDXLDataBufferEx[1024];//[256]; //2013-08-05 changed 256 to 1024
 
-volatile byte gbpParameterEx[130+10];
+volatile byte gbpParameterEx[255];//[130+10];  //2013-08-05 changed 130+10 to 255
 volatile byte gbBusUsedEx;
 uint32 gbRxLengthEx;
 byte gbpRxBufferEx[MAXNUM_RXPACKET];

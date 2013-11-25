@@ -7,10 +7,36 @@
 
 #include "DynamixelPro.h"
 #include "dxl_pro.h"
-extern uint8 gbIsDynmixelUsed;
+#include "Arduino-compatibles.h"
 
-DynamixelPro::DynamixelPro() {
+
+extern usart_dev *gDynamixelUsartDev;
+
+DynamixelPro::DynamixelPro(int devNum) {
 	// TODO Auto-generated constructor stub
+
+	if(devNum == 1){ //USART1 case
+
+		gDynamixelUsartDev = USART1;
+
+
+		///gbIsDynmixelUsed = &gbIsDynmixelUsart1Used;
+
+	}else if(devNum == 2){//USART2 case
+		/*
+		 * [ROBOTIS] USART2 device should not be used in dynamixel bus
+		 * */
+
+		//gDynamixelUsartDev = USART2;  //forbidden
+	}else if(devNum ==3 ){//USART3 case
+
+		gDynamixelUsartDev = USART3;
+
+
+
+	}else{
+		gDynamixelUsartDev = USART1; // default is USART1
+	}
 
 }
 
@@ -24,10 +50,11 @@ void DynamixelPro::begin(int baud) {
 	uint32 Baudrate = 0;
 	//TxDString("[DXL]start begin\r\n");
 
-	//change GPIO D9(PA9),D10(PA10) -> D20(PB6), D21(PB7) in USART1 using AFIO
-	afio_remap(AFIO_REMAP_USART1);
-	//must be declare as SWJ_NO_NJRST because dxl bus use PB5 as DXL_DIR in Half Duplex USART and also use SWJ
-	afio_cfg_debug_ports(AFIO_DEBUG_FULL_SWJ_NO_NJRST);
+
+	if(gDynamixelUsartDev == USART1){
+		afio_remap(AFIO_REMAP_USART1);
+	}
+
 #ifdef BOARD_CM900  //Engineering version case
 
 	 gpio_set_mode(PORT_ENABLE_TXD, PIN_ENABLE_TXD, GPIO_OUTPUT_PP);
@@ -35,30 +62,50 @@ void DynamixelPro::begin(int baud) {
 	 gpio_write_bit(PORT_ENABLE_TXD, PIN_ENABLE_TXD, 0 );// TX Disable
 	 gpio_write_bit(PORT_ENABLE_RXD, PIN_ENABLE_RXD, 1 );// RX Enable
 #else
-	 gpio_set_mode(PORT_TXRX_DIRECTION, PIN_TXRX_DIRECTION, GPIO_OUTPUT_PP);
-	 gpio_write_bit(PORT_TXRX_DIRECTION, PIN_TXRX_DIRECTION, 0 );// RX Enable
+
+	 if(gDynamixelUsartDev == USART1){
+			 // initialize GPIO D20(PB6), D21(PB7) as DXL TX, RX respectively
+		 gpio_set_mode(PORT_DXL_TXD, PIN_DXL_TXD, GPIO_AF_OUTPUT_PP);
+		 gpio_set_mode(PORT_DXL_RXD, PIN_DXL_RXD, GPIO_INPUT_FLOATING);
+		 gpio_set_mode(PORT_TXRX_DIRECTION, PIN_TXRX_DIRECTION, GPIO_OUTPUT_PP);
+		 gpio_write_bit(PORT_TXRX_DIRECTION, PIN_TXRX_DIRECTION, 0 );// RX Enable
+
+	 }else if(gDynamixelUsartDev == USART2){
+		 /*
+		  *[ROBOTIS] USART2 device should not be used in dynamixel bus
+		  * */
+	 }else if(gDynamixelUsartDev == USART3){
+		 // initialize GPIO D20(PB6), D21(PB7) as DXL TX, RX respectively
+		 gpio_set_mode(PORT_DXL_TXD3, PIN_DXL_TXD3, GPIO_AF_OUTPUT_PP);
+		 gpio_set_mode(PORT_DXL_RXD3, PIN_DXL_RXD3, GPIO_INPUT_FLOATING);
+		 gpio_set_mode(PORT_TXRX_DIRECTION3, PIN_TXRX_DIRECTION3, GPIO_OUTPUT_PP);
+		 gpio_write_bit(PORT_TXRX_DIRECTION3, PIN_TXRX_DIRECTION3, 0 );// RX Enable
+
+	 }
 #endif
 
-	 // initialize GPIO D20(PB6), D21(PB7) as DXL TX, RX respectively
-	 gpio_set_mode(PORT_DXL_TXD, PIN_DXL_TXD, GPIO_AF_OUTPUT_PP);
-	 gpio_set_mode(PORT_DXL_RXD, PIN_DXL_RXD, GPIO_INPUT_FLOATING);
 
-
-	 //Initialize USART 1 device
-	 usart_init(USART1);
-
+	 //Initialize USARTx device
+	 usart_init(gDynamixelUsartDev);
 
 	 //Calculate baudrate, refer to ROBOTIS support page.
-	 //Baudrate = 2000000 / (baud + 1);
 	 Baudrate = dxl_get_baudrate(baud);
 
-	usart_set_baud_rate(USART1, STM32_PCLK2, Baudrate);
-	nvic_irq_set_priority(USART1->irq_num, 0);//[ROBOTIS][ADD] 2013-04-10 set to priority 0
-	usart_attach_interrupt(USART1,dxlProInterrupt);
-	usart_enable(USART1);
+	 if(gDynamixelUsartDev == USART1){
+		 usart_set_baud_rate(gDynamixelUsartDev, STM32_PCLK2, Baudrate);
+	 }else{
+		 usart_set_baud_rate(gDynamixelUsartDev, STM32_PCLK1, Baudrate);
+	 }
 
-	gbIsDynmixelUsed = 0;  //[ROBOTIS]2012-12-13 to notify end of using dynamixel classic to uart.c
+	nvic_irq_set_priority(gDynamixelUsartDev->irq_num, 0);//[ROBOTIS][ADD] 2013-04-10 set to priority 0
+	usart_attach_interrupt(gDynamixelUsartDev, dxlProInterrupt);
+	usart_enable(gDynamixelUsartDev);
+
+	delay(80);
+
+	gbRxLengthEx = 0;
 	clearBuffer256Ex();
+
 	mResult= 0;
 	for(i=0; i<32; i++){
 		mBulkData[i].iID = 0;
@@ -82,18 +129,23 @@ void DynamixelPro::end(void){
 
 byte DynamixelPro::readRaw(void){
 
-	/*byte bData=0;
-	bData = RxByteFromDXL();
-	clearBuffer256();*/
 	return RxByteFromDXLEx();
 }
 void DynamixelPro::writeRaw(uint8 value){
 
-	DXL_TXD
-
+	if(gDynamixelUsartDev == USART1){
+		DXL_TXD
+	}else{
+		DXL_TXD3
+	}
 	TxByteToDXLEx(value);
 
-	DXL_RXD
+	if(gDynamixelUsartDev == USART1){
+		DXL_RXD
+	}else{
+		DXL_RXD3
+	}
+
 
 }
 /*
@@ -145,7 +197,7 @@ word DynamixelPro::readWord(byte bID, int wAddress){
 		return(DXL_MAKEWORD(gbpRxBufferEx[9], gbpRxBufferEx[10]));
 	}else{
 		mResult = 0;
-		return 0xff;
+		return 0xffff;
 	}
 
 }
@@ -192,7 +244,7 @@ uint32 DynamixelPro::readDword( byte bID, int wAddress ){
 							 );
 	}else{
 		mResult = 0;
-		return 0xff;
+		return 0xffffffff;
 	}
 }
 
@@ -432,5 +484,8 @@ int DynamixelPro::bulkWrite(byte *param, int param_length){
 	}
 	 mResult = txrx_PacketEx(BROADCAST_ID, INST_BULK_WRITE_EX, param_length);;
 
+	return mResult;
+}
+byte DynamixelPro::getResult(void){
 	return mResult;
 }

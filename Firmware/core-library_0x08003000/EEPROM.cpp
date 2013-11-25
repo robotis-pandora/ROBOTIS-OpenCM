@@ -26,3 +26,10 @@ int EEPROM::read(int vAddress){
 void EEPROM::write(int vAddress, int data){
 	EEPROM_Write((uint16)vAddress,(uint16)data);
 }
+void EEPROM::erase(int page){
+	EEPROM_ERASE(page);
+}
+void EEPROM::eraseAll(void){
+	EEPROM_ERASE(0);
+	EEPROM_ERASE(1);
+}

@@ -8,7 +8,7 @@
 MEMORY
 {
   ram (rwx) : ORIGIN = 0x20000000, LENGTH = 20K
-  rom (rx)  : ORIGIN = 0x08003000, LENGTH = 52K /*[ROBOTIS][CHANGE]support for cm-900
+  rom (rx)  : ORIGIN = 0x08003000, LENGTH = 56K /*[ROBOTIS][CHANGE]support for cm-900
   
   /*RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 20K  
   FLASH (rx) : ORIGIN = 0x8003000, LENGTH = 64K

@@ -28,6 +28,13 @@ void RC100::end(void){
 int RC100::writeData(int data){
 	return rc100TxData(data);
 }
+void RC100::writeRaw(byte temp){
+
+	TxDByteUart2(temp);
+}
+byte RC100::readRaw(void){
+	return RxDByteUart2();
+}
 int RC100::available(void){
 	return rc100RxCheck();
 }

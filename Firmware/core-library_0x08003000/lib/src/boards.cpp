@@ -24,7 +24,7 @@
  * SOFTWARE.
  *****************************************************************************/
 
-/**
+/** BOARD_USART2_RX_PIN
  * @brief Generic board initialization routines.
  *
  * By default, we bring up all Maple boards to 72MHz, clocked off the
