@@ -18,7 +18,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
- 
+
 #include <CM9_BC.h>
 
 #define MAX_NUM_SERVOS		30
@@ -44,12 +44,12 @@ int checksum;						// checksum
 
 typedef struct
 {
-	unsigned char pose;			// index of pose to transition to
+	bc_pose_t pose;				// index of pose to transition to
 	int time;						// time for transition
 } sp_trans_t;
 
 // pose and sequence storage
-int poses[30][MAX_NUM_SERVOS];		// poses [index][servo_id-1]
+bc_pose_t poses[30][MAX_NUM_SERVOS];		// poses [index][servo_id-1]
 sp_trans_t sequence[50];			// sequence
 int seqPos;							// step in current sequence	
 
@@ -77,8 +77,6 @@ void setup()
 
 void loop()
 {
-	int i;
-
 	// process messages
 	while(SerialUSB.available() > 0)
 	{
@@ -87,16 +85,17 @@ void loop()
 		{
 			if(SerialUSB.read() == 0xff)
 			{
-				mode = 2;
+//				mode = 2;
+				mode = 1;
 //				digitalWrite(0,HIGH-digitalRead(0));
 			}
-		//}
-		//else if(mode == 1)		// another start byte
-		//{
-		//	if(SerialUSB.read() == 0xff)
-		//		mode = 2;
-		//	else
-		//		mode = 0;
+		}
+		else if(mode == 1)			// another start byte
+		{
+			if(SerialUSB.read() == 0xff)
+				mode = 2;
+			else
+				mode = 0;
 		}
 		else if(mode == 2)			// next byte is index of servo
 		{
@@ -125,7 +124,7 @@ void loop()
 			if(index + 1 == length)	// we've read params & checksum
 			{
 				mode = 0;
-				if((checksum%256) != 255)
+				if((checksum&0xFF) != 255)
 				{
 					// return a packet: FF FF id Len Err params=None check
 					SerialUSB.write(0xff);
@@ -133,7 +132,7 @@ void loop()
 					SerialUSB.write(id);
 					SerialUSB.write(2);
 					SerialUSB.write(64);
-					SerialUSB.write(255-((66+id)%256));
+					SerialUSB.write(255-((66+id)&0xFF));
 				}
 				else
 				{
@@ -145,7 +144,9 @@ void loop()
 						SerialUSB.write(id);
 						SerialUSB.write(2);
 						SerialUSB.write((unsigned char)0);
-						SerialUSB.write(255-((2+id)%256));
+						SerialUSB.write(255-((2+id)&0xFF));
+//						SerialUSB.write(ins);
+//						SerialUSB.write(255-((2+ins+id)&0xFF));
 						// special ArbotiX instructions
 						// Pose Size = 7, followed by single param: size of pose
 						// Load Pose = 8, followed by index, then pose positions (# of param = 2*pose_size+1)
@@ -153,33 +154,34 @@ void loop()
 						// Play Seq = A, no params
 						if(ins == ARB_SIZE_POSE)
 						{
-							bioloid.poseSize = params[0];
+							bioloid.setPoseSize(params[0]);
 							bioloid.readPose();
-							//SerialUSB.println(bioloid.poseSize);
+							//SerialUSB.println(poseSize);
 						}
 						else if(ins == ARB_LOAD_POSE)
 						{
-							int i;
-							SerialUSB.print("New Pose:");
-							for(i=0; i<bioloid.poseSize; i++)
+							int poseSize = bioloid.getPoseSize();
+							int iter;
+//							SerialUSB.print("New Pose:");
+							for (iter=0; iter<poseSize; iter++)
 							{
-								poses[params[0]][i] = params[(2*i)+1]+(params[(2*i)+2]<<8);
-								//SerialUSB.print(poses[params[0]][i]);
-								//SerialUSB.print(",");
+								poses[params[0]][iter] = (params[(2*iter)+1]+(params[(2*iter)+2]<<8));
+//								SerialUSB.print(poses[params[0]][iter]);
+//								SerialUSB.print(",");
 							}
-							SerialUSB.println("");
+//							SerialUSB.println("");
 						}
 						else if(ins == ARB_LOAD_SEQ)
 						{
-							int i;
-							for(i=0;i<(length-2)/3;i++)
+							int iter;
+							for (iter=0; iter<(length-2)/3; iter++)
 							{
-								sequence[i].pose = params[(i*3)];
-								sequence[i].time = params[(i*3)+1] + (params[(i*3)+2]<<8);
+								sequence[iter].pose = params[(iter*3)];
+								sequence[iter].time = params[(iter*3)+1] + (params[(iter*3)+2]<<8);
 								//SerialUSB.print("New Transition:");
-								//SerialUSB.print((int)sequence[i].pose);
+								//SerialUSB.print((int)sequence[iter].pose);
 								//SerialUSB.print(" in ");
-								//SerialUSB.println(sequence[i].time);
+								//SerialUSB.println(sequence[iter].time);
 							}
 						}
 						else if(ins == ARB_PLAY_SEQ)
@@ -187,19 +189,28 @@ void loop()
 							seqPos = 0;
 							while(sequence[seqPos].pose != 0xff)
 							{
-								int i;
-								int p = sequence[seqPos].pose;
 								// are we HALT?
-								if(SerialUSB.read() == 'H') return;
-								// load pose
-								for(i=0; i<bioloid.poseSize; i++)
+								if (SerialUSB.available())
 								{
-									bioloid.setNextPose(i+1,poses[p][i]);
+									if(SerialUSB.read() == 'H')
+										return;
+								}
+
+								int p = sequence[seqPos].pose;
+								int poseSize = bioloid.getPoseSize();
+
+								// load pose
+								int iter;
+								for (iter=0; iter<poseSize; iter++)
+								{
+									bioloid.setNextPose(iter+1,poses[p][iter]);
 								}
 								// interpolate
 								bioloid.interpolateSetup(sequence[seqPos].time);
-								while(bioloid.interpolating)
+								while(bioloid.interpolating())
+								{
 									bioloid.interpolateStep();
+								}
 								// next transition
 								seqPos++;
 							}
@@ -211,18 +222,25 @@ void loop()
 								seqPos = 0;
 								while(sequence[seqPos].pose != 0xff)
 								{
-									int i;
-									int p = sequence[seqPos].pose;
 									// are we HALT?
-									if(SerialUSB.read() == 'H') return;
-									// load pose
-									for(i=0; i<bioloid.poseSize; i++)
+									if (SerialUSB.available())
 									{
-										bioloid.setNextPose(i+1,poses[p][i]);
+										if(SerialUSB.read() == 'H')
+											return;
+									}
+
+									int p = sequence[seqPos].pose;
+									int poseSize = bioloid.getPoseSize();
+
+									// load pose
+									int iter;
+									for(iter=0; iter<poseSize; iter++)
+									{
+										bioloid.setNextPose(iter+1,poses[p][iter]);
 									}
 									// interpolate
 									bioloid.interpolateSetup(sequence[seqPos].time);
-									while(bioloid.interpolating)
+									while(bioloid.interpolating())
 										bioloid.interpolateStep();
 									// next transition
 									seqPos++;
@@ -279,11 +297,9 @@ void loop()
 					}
 					else
 					{
-						int i;
 						// pass thru
 						if(ins == INST_READ)
 						{
-							int i;
 							Dxl.setTxPacketId(id);
 							Dxl.setTxPacketInstruction(INST_READ);
 							Dxl.setTxPacketParameter(0,params[0]);
@@ -291,13 +307,26 @@ void loop()
 							Dxl.setTxPacketLength(2);
 							Dxl.txrxPacket();
 							// return a packet: FF FF id Len Err params check
-							int lennie = Dxl.getRxPacketLength()+4;
-							if (lennie >= 6)
+							if (Dxl.getResult()==(1<<COMM_RXSUCCESS))
 							{
-								for (i=0; i<lennie; i++)
+								int lennie = Dxl.getRxPacketLength()+4;
+								if (lennie >= 6)
 								{
-									SerialUSB.write(Dxl.getRxPacketParameter(i-5));
+									int iter;
+									for (iter=0; iter<lennie; iter++)
+									{
+										SerialUSB.write(Dxl.getRxPacketParameter(iter-5));
+									}
 								}
+							}
+							else
+							{
+								SerialUSB.write(0xff);
+								SerialUSB.write(0xff);
+								SerialUSB.write(id);
+								SerialUSB.write(2);
+								SerialUSB.write(128);
+								SerialUSB.write(255-((130+id)&0xFF));
 							}
 						}
 						else if(ins == INST_WRITE)
@@ -308,18 +337,32 @@ void loop()
 							}
 							else
 							{
-								int x = params[1] + (params[2]<<8);
+								int x = Dxl.makeWord(params[1], params[2]);
 								Dxl.writeWord(id,params[0],x);
 							}
 							// return a packet: FF FF id Len Err params check
-							int lennie = Dxl.getRxPacketLength()+4;
-							if (lennie >= 6)
+							if (Dxl.getResult()==(1<<COMM_RXSUCCESS))
 							{
-								for (i=0; i<lennie; i++)
+								int lennie = Dxl.getRxPacketLength()+4;
+								if (lennie >= 6)
 								{
-									SerialUSB.write(Dxl.getRxPacketParameter(i-5));
+									int iter;
+									for (iter=0; iter<lennie; iter++)
+									{
+										SerialUSB.write(Dxl.getRxPacketParameter(iter-5));
+									}
 								}
 							}
+							else
+							{
+								SerialUSB.write(0xff);
+								SerialUSB.write(0xff);
+								SerialUSB.write(id);
+								SerialUSB.write(2);
+								SerialUSB.write(128);
+								SerialUSB.write(255-((130+id)&0xFF));
+							}
+
 						}
 					}
 				}

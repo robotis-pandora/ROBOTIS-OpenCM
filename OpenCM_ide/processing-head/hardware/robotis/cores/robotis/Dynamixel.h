@@ -36,7 +36,8 @@ public:
 	byte setPosition(byte ServoID, int Position, int Speed);
 	byte getResult(void); // use getTxRxStatus() instead of getResult() method
 	byte getTxRxStatus(void);// made by NaN (Robotsource.org)
-
+	byte setLibStatusReturnLevel(byte); // made by NaN (Robotsource.org)
+	byte setLibNumberTxRxAttempts(byte);// made by NaN (Robotsource.org)
 
 	 /////// Methods for making a packet ////////
 	void setTxPacketId( byte id );
@@ -80,9 +81,10 @@ private:
 	void dxlTxEnable(void);
 	void dxlTxDisable(void);
 	void clearBuffer(void);
-
 	byte rxPacket(byte bRxLength);
 
+	uint8 setDxlLibStatRtnLvl(uint8); // inspired by NaN (robotsource.org)
+	uint8 setDxlLibNumTries(uint8); // inspired by NaN (robotsource.org)
 
 	dxl_dev *mDxlDevice;
 	usart_dev *mDxlUsart;  /*< USART Device*/
@@ -99,7 +101,14 @@ private:
 	uint8 mParamBuffer[DXL_PARAMETER_BUF_SIZE];
 	uint8 mBusUsed;
 	uint8 mRxLength;  // the length of the received data from dynamixel bus
+
+	// additions to return proper COMM_* status
 	uint8 mDXLtxrxStatus;  // inspired by NaN (robotsource.org)
+	// additions to permit non-default Status Return Level settings without returning errors
+	uint8 gbDXLStatusReturnLevel;
+	// additions to adjust number of txrx attempts
+	uint8 gbDXLNumberTxRxAttempts;
+
 	byte mbLengthForPacketMaking;
 	byte mbIDForPacketMaking;
 	byte mbInstructionForPacketMaking;

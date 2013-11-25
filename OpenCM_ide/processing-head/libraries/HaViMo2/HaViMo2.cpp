@@ -16,7 +16,7 @@ bool HaViMo2_Controller::ready(void)
 		// If responds => done processing last image, get results
 		// Else => still processing, wait/try again later
 	Dxl.ping(HaViMo2_ID);
-	if (Dxl.getResult()==COMM_RXSUCCESS)
+	if (Dxl.getResult()==(1<<COMM_RXSUCCESS))
 	{
 		return true;
 	}
@@ -46,7 +46,7 @@ uint8_t HaViMo2_Controller::recover(void)
 
 	// Dxl buffer is not cleared prior to RX
 	//  If not checking for result, will grab from last valid RX packet
-		if ( (Dxl.getResult()==COMM_RXSUCCESS) &&
+		if ( (Dxl.getResult()==(1<<COMM_RXSUCCESS)) &&
 				(Dxl.getRxPacketLength()==(16+2)) )
 		{
 			if (Dxl.getRxPacketParameter(1)>0)

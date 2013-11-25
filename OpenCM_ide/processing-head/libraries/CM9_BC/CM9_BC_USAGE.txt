@@ -1,0 +1,39 @@
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// DATA TYPES AND STRUCTURES
+
+'bc_pose_t'		// position
+	The base component of a CM9_BC motion.  It represents a single goal position for a single servo.
+
+'bc_pose_t*'	// pose
+	The goal positions of all servos in a single pose.  The first entry in the array is always the number of servos in the array for a total array length of N+1.
+
+Example usage of poses and manual interpolation: cm9_bc_tutorial_1.ino
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+'bc_seq_t'			// transition
+	A pointer to an array of 'bc_pose_t' and a time length.  It is a essentially a pose (an array of servo goal positions) and the time to be taken to transition from the current servo positions to the goal positions.  It is equivalent to a single RoboPlus Motion "step". Unlike a RoboPlus Motion "step", there is no limit to the number of servos controlled within a pose (an array of 'bc_pose_t').
+
+'bc_seq_t*'			// sequence
+	An array of 'bc_seq_t' is almost equivalent to a single RoboPlus Motion "page".  It is a sequence of poses and the time to transition between each pose.  Unlike a RoboPlus Motion "page", there is no limit on the length of a sequence (an array of 'bc_seq_t').  There are also no "next" or "stop" indices to link mulitple RoboPlus Motion "pages".
+
+Example usage of sequences and automatic interpolation: cm9_bc_tutorial_2.ino
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+'rpm_page_t'			// RPM sequence
+	A pointer to a sequence plus a "next" index and a "stop" index.  Not very useful on its own as the indices have no meaning outside an RPM array.
+
+'rpm_page_t*'			// RPM array
+	There is usually a single 'rpm_page_t' array that acts as a compatibility structure to permit usage of RoboPlus Task compatible indices to begin motion sequences instead of hard-coding the name of each 'bc_seq_t' array into user code.  It also permits usage of the "next" and "stop" indices.
+
+Example usage of RPM compatibility interface: cm9_bc_tutorial_3.ino
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// FUNCTIONS
+
+

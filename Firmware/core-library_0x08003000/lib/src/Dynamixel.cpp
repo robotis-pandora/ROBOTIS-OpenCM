@@ -91,6 +91,10 @@ void Dynamixel::begin(int baud){
 	//gbIsDynmixelUsed = 1;  //[ROBOTIS]2012-12-13 to notify end of using dynamixel SDK to uart.c
 	this->clearBuffer();
 
+	this->setLibStatusReturnLevel(2);
+	this->setLibNumberTxRxAttempts(1);
+
+
 }
 /*
  *  [ROBOTIS][ADD][START] 2013-04-09 support read and write on dxl bus
@@ -277,16 +281,16 @@ byte Dynamixel::rxPacket(byte bRxLength){
 }
 byte Dynamixel::txRxPacket(byte bID, byte bInst, byte bTxParaLen){
 
-#define TRY_NUM 2//;;2
+//#define TRY_NUM 2//;;2
 
 	mDXLtxrxStatus = 0;
 
 	byte bTxLen, bRxLenEx, bTryCount;
 
 	mBusUsed = 1;
+	mRxLength = bRxLenEx = 0;
 
-
-	for(bTryCount = 0; bTryCount < TRY_NUM; bTryCount++)
+	for(bTryCount = 0; bTryCount < gbDXLNumberTxRxAttempts; bTryCount++)//for(bTryCount = 0; bTryCount < TRY_NUM; bTryCount++)
 	{
 		//gbDXLReadPointer = gbDXLWritePointer;
 		mDxlDevice->read_pointer = mDxlDevice->write_pointer;//[ROBOTIS]BufferClear050728
@@ -295,9 +299,9 @@ byte Dynamixel::txRxPacket(byte bID, byte bInst, byte bTxParaLen){
 		if (bTxLen == (bTxParaLen+4+2)){
 			mDXLtxrxStatus = (1<<COMM_TXSUCCESS);
 		}
-		else{
-			return 0;
-		}
+//		else{
+//			return 0;
+//		}
 
 		if(bInst == INST_PING){
 			if(bID == BROADCAST_ID){
@@ -308,14 +312,23 @@ byte Dynamixel::txRxPacket(byte bID, byte bInst, byte bTxParaLen){
 			}
 		}
 		else if(bInst == INST_READ){
-			mRxLength = bRxLenEx = 6+mParamBuffer[1]; // basic response packet length + requested data length in read instruction
+			//mRxLength = bRxLenEx = 6+mParamBuffer[1]; // basic response packet length + requested data length in read instruction
+			if (gbDXLStatusReturnLevel>0)
+				mRxLength = bRxLenEx = 6+mParamBuffer[1];
+			else
+				mRxLength = bRxLenEx = 0;
+
 		}
 		else if( bID == BROADCAST_ID ){
 			mRxLength = bRxLenEx = 0; // no response packet in case broadcast id
 			break;
 		}
 		else{
-			mRxLength = bRxLenEx = 6; //basic response packet length
+			//mRxLength = bRxLenEx = 6; //basic response packet length
+			if (gbDXLStatusReturnLevel>1)
+				mRxLength = bRxLenEx = 6+mParamBuffer[1];
+			else
+				mRxLength = bRxLenEx = 0;
 		}
 
 
@@ -507,7 +520,17 @@ byte Dynamixel::getTxRxStatus(void) // made by NaN (Robotsource.org)
 {
 	return mDXLtxrxStatus;
 }
+byte Dynamixel::setLibStatusReturnLevel(byte num)
+{
+	gbDXLStatusReturnLevel = num;
+	return gbDXLStatusReturnLevel;
+}
 
+byte Dynamixel::setLibNumberTxRxAttempts(byte num)
+{
+	gbDXLNumberTxRxAttempts = num;
+	return gbDXLNumberTxRxAttempts;
+}
 void Dynamixel::printBuffer(byte *bpPrintBuffer, byte bLength)
 {
 #ifdef	PRINT_OUT_TRACE_ERROR_PRINT_TO_USART2

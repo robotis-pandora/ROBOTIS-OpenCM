@@ -1,24 +1,43 @@
 #include <CM9_BC.h>
-#include "HelloRobo_RPM.h"		// Only legs of Type-A Humanoid
 
-// Adjust for each bot
-int Offset_Calibration[] __FLASH__ = {12,0,0,0,0,0,0,0,0,0,0,0,0};
+int Offset_Calibration[] __FLASH__ = {4,0,0,0,0};
 
-#include <RC100.h>
+bc_pose_t ServoIDs[] __FLASH__ = {4,1,2,3,4};
+
+
+bc_pose_t ReadyPose[] __FLASH__ = {4,512,512,512,512};
+
+bc_pose_t Middle_Max[] __FLASH__ = {4,768,768,768,768};
+bc_pose_t Middle_Min[] __FLASH__ = {4,256,256,256,256};
+
+bc_pose_t Alter_2[] __FLASH__ = {4,768,768,256,256};
+bc_pose_t Alter_3[] __FLASH__ = {4,256,256,768,768};
+
+
+bc_seq_t ReadyPage[] __FLASH__ = {{ServoIDs, 1}, {ReadyPose, 1000}};
+
+bc_seq_t Sweeper[] __FLASH__ = {{ServoIDs,4}, {Middle_Max,500}, {ReadyPose,500}, {Middle_Min,500}, {ReadyPose,500}};
+
+bc_seq_t Alternator_1[] __FLASH__ = {{ServoIDs,2}, {Alter_2,500}, {ReadyPose,500}};
+bc_seq_t Alternator_2[] __FLASH__ = {{ServoIDs,2}, {Alter_3,500}, {ReadyPose,500}};
+
+
+rpm_page_t Tutorial_RoboPlusMotion_Array[] __FLASH__ = {
+	{0,					0,		4},	// 0
+	{ReadyPage,			0,		0},	// 1
+	{Sweeper,			2,		0},	// 2
+	{Alternator_1,		4,		0},	// 3
+	{Alternator_2,		3,		0}	// 4
+};
 
 BioloidController BioCon;
-RC100 Boomer;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void setup()
 {
-	// Setup Dynamixel bus, USB, and RC-100 interfaces
+	// Setup Dynamixel bus and USB interfaces
 	Dxl.begin(1);
-	Dxl.setLibNumberTxRxAttempts(3);
-	Dxl.writeWord(BROADCAST_ID, P_MAX_TORQUE_L, 300);
-	
 	SerialUSB.begin();
-	Boomer.begin();
 
 	while (1)
 	{
@@ -32,15 +51,11 @@ void setup()
 			SerialUSB.read();
 			break;
 		}
-		if (Boomer.available())
-		{
-			break;
-		}
 	}
 	SerialUSB.print("Now starting program\n");
 
 	// Load the RoboPlusMotion_Array from our _RPM header file
-	BioCon.RPM_Setup(HelloRobo_RoboPlusMotion_Array);
+	BioCon.RPM_Setup(Tutorial_RoboPlusMotion_Array);
 	//  This gives the motion engine the location of the RPM page file
 	// 	Sets up the motion engine (allocates memory and initializes variables)
 	//  Loads the servo IDs from the first pose in the first sequence in the array
@@ -56,7 +71,7 @@ void loop()
 	SerialUSB.print("loop() started. Going to Ready Position...");
 //	BioCon.setTimeModifier(300);
 	BioCon.loadOffsets(Offset_Calibration);
-	BioCon.MotionPage(1);	// HelloRobo_Init_1
+	BioCon.MotionPage(1);	// ReadyPage
 	while (BioCon.MotionStatus())
 	{
 		delay(1);
@@ -82,67 +97,29 @@ void loop()
 //  motion engine will fail to update.
 	while(1)
 	{
-		unsigned int rang = 0;
-		if (Boomer.available())
+		char keypress = 0;
+		if (SerialUSB.available())
 		{
-			rang = Boomer.readData();
-		}
-		else if (SerialUSB.available())
-		{
-			rang = SerialUSB.read();
+			keypress = SerialUSB.read();
 		}
 		
-		if (rang == RC100_BTN_U)
+		if (keypress == '1')
 		{
-			// Go forward
-			BioCon.MotionPage(3);	// HelloRobo_F_R_S_3
+			BioCon.MotionPage(1);	// ReadyPage
 		}
-		else if (rang == RC100_BTN_D)
+		else if (keypress == '2')
 		{
-			// Go Backward
-			BioCon.MotionPage(13);	// HelloRobo_B_R_S_13
+			BioCon.MotionPage(2);	// Sweeper
 		}
-		else if (rang == RC100_BTN_L)
+		else if (keypress == '3')
 		{
-			// Strafe Left
-			BioCon.MotionPage(24);	// HelloRobo_L_24
+			BioCon.MotionPage(3);	// Alternator_1
 		}
-		else if (rang == RC100_BTN_R)
+		else if (keypress == '4')
 		{
-			// Strafe Right
-			BioCon.MotionPage(23);	// HelloRobo_R_23
+			BioCon.MotionPage(4);	// Alternator_2
 		}
-		else if (rang == RC100_BTN_6)
-		{
-			// Spin Left
-			BioCon.MotionPage(28);	// HelloRobo_LT_28
-		}
-		else if (rang == RC100_BTN_5)
-		{
-			// Spin Right
-			BioCon.MotionPage(27);	// HelloRobo_RT_27
-		}
-		else if (rang == RC100_BTN_3)
-		{
-			// Go to Init
-			BioCon.MotionPage(1);	// HelloRobo_Init_1
-		}
-		else if (rang == RC100_BTN_1)
-		{
-			// Defend Front
-			BioCon.MotionPage(47);	// HelloRobo_D_Front_47
-		}
-		else if (rang == RC100_BTN_2)
-		{
-			// Defend Left
-			BioCon.MotionPage(48);	// HelloRobo_D_Left_48
-		}
-		else if (rang == RC100_BTN_4)
-		{
-			// Defend Right
-			BioCon.MotionPage(46);	// HelloRobo_D_Right_46
-		}
-		else if (rang > 0)
+		else if (keypress > 0)
 		{
 			// Stop
 			BioCon.MotionPage(0);	// INVALID/STOP

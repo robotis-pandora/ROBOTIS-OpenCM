@@ -22,7 +22,7 @@ void setup()
 /*
 	// Waits 10 seconds for you to open the console (open too quickly after
 	//   downloading new code, and you will get errors
-    delay(10000);
+	delay(10000);
 	SerialUSB.print("Send any value to continue...\n");
 	while(!SerialUSB.available())
 	{
