@@ -101,8 +101,6 @@ void DynamixelPro::begin(int baud) {
 	usart_attach_interrupt(gDynamixelUsartDev, dxlProInterrupt);
 	usart_enable(gDynamixelUsartDev);
 
-	delay(80);
-
 	gbRxLengthEx = 0;
 	clearBuffer256Ex();
 
@@ -117,6 +115,7 @@ void DynamixelPro::begin(int baud) {
 		mBulkData[i].iData[2] = 0; //DATA3
 		mBulkData[i].iData[3] = 0; //DATA4
 	}
+	delay(100);
 }
 
 

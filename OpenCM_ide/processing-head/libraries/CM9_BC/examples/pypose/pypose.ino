@@ -20,7 +20,8 @@
 */
 
 #include <CM9_BC.h>
-
+Dynamixel Dxl(3);
+Dynamixel *pDxl = &Dxl;
 #define MAX_NUM_SERVOS		30
 BioloidController bioloid;
 

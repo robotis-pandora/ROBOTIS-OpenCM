@@ -85,7 +85,7 @@ void Dynamixel::begin(int baud){
 	nvic_irq_set_priority(mDxlUsart->irq_num, 0);//[ROBOTIS][ADD] 2013-04-10 set to priority 0
 	usart_attach_interrupt(mDxlUsart, mDxlDevice->handlers);
 	usart_enable(mDxlUsart);
-	delay(80);
+	
 	mDXLtxrxStatus = 0;
 	mBusUsed = 0;// only 1 when tx/rx is operated
 	//gbIsDynmixelUsed = 1;  //[ROBOTIS]2012-12-13 to notify end of using dynamixel SDK to uart.c
@@ -93,6 +93,7 @@ void Dynamixel::begin(int baud){
 
 	this->setLibStatusReturnLevel(2);
 	this->setLibNumberTxRxAttempts(1);
+	delay(100);
 
 
 }

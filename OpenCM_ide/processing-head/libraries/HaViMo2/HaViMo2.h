@@ -35,6 +35,7 @@
 //#include "wirish.h"
 #include <Dynamixel.h>
 
+//extern Dynamixel *pDxl;
 // HaViMo2
 #define HaViMo2_ID                      100
 typedef enum {

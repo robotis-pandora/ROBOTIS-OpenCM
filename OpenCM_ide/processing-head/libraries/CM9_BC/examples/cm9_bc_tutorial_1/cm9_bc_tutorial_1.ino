@@ -4,6 +4,8 @@
 //  interpolation between poses.  It can be run on a carbot, but the servo
 //  position values may cause issues on other robots.
 
+Dynamixel Dxl(3);
+Dynamixel *pDxl = &Dxl;
 bc_pose_t ServoIDs[] __FLASH__ = {4,1,2,3,4};
 
 bc_pose_t Middle_Mid[] __FLASH__ = {4,512,512,512,512};

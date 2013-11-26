@@ -1,5 +1,6 @@
 #include <CM9_BC.h>
-
+Dynamixel Dxl(3);
+Dynamixel *pDxl = &Dxl;
 BioloidController bioloid;
 
 unsigned int cm9_bc_ex_id[] __FLASH__ = {1,19};

@@ -21,6 +21,7 @@
 
 #include "CM9_BC.h"
 
+extern Dynamixel *pDxl;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,7 +42,7 @@ void BioloidController::setup(unsigned int servo_count)
 	resolutions_ = (unsigned int *) malloc(numServos_ * sizeof(unsigned int));
 
 	// Initialize everything
-	int iter;
+	unsigned int iter;
 	for(iter=0;iter<numServos_;iter++)
 	{
 		// Assumes AX/RX/EX series servos
@@ -80,7 +81,7 @@ void BioloidController::loadPose( bc_pose_t * addr )
 	}
 	poseSize_ = servo_count;
 
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<poseSize_; iter++)
 	{
 		nextpose_[iter] = addr[1+iter] << BIOLOID_SHIFT;
@@ -90,11 +91,11 @@ void BioloidController::loadPose( bc_pose_t * addr )
 /// Read current servo positions and store to the pose.
 void BioloidController::readPose()
 {
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<numServos_; iter++)
 	{
-		int temp = Dxl.readWord(id_[iter], P_PRESENT_POSITION_L);
-		if (Dxl.getResult()==(1<<COMM_RXSUCCESS))
+		unsigned int temp = pDxl->readWord(id_[iter], P_PRESENT_POSITION_L);
+		if (pDxl->getResult()==(1<<COMM_RXSUCCESS))
 		{
 			if ((temp < resolutions_[iter]) && (temp > 0))
 				pose_[iter] = temp << BIOLOID_SHIFT;
@@ -115,16 +116,16 @@ void BioloidController::writePose()
 	if (bcState_ != RUNNING)
 		return;
 
-	int temp;
-	int numParams = 2 + (poseSize_ * 3);   // 3 = id + GOAL_L + GOAL_H
+	unsigned int temp;
+	unsigned int numParams = 2 + (poseSize_ * 3);   // 3 = id + GOAL_L + GOAL_H
 
-	Dxl.setTxPacketId( BROADCAST_ID );
-	Dxl.setTxPacketInstruction( INST_SYNC_WRITE );
-	Dxl.setTxPacketLength( numParams );
-	Dxl.setTxPacketParameter( 0, P_GOAL_POSITION_L );
-	Dxl.setTxPacketParameter( 1, 2 );	// writing two bytes
+	pDxl->setTxPacketId( BROADCAST_ID );
+	pDxl->setTxPacketInstruction( INST_SYNC_WRITE );
+	pDxl->setTxPacketLength( numParams );
+	pDxl->setTxPacketParameter( 0, P_GOAL_POSITION_L );
+	pDxl->setTxPacketParameter( 1, 2 );	// writing two bytes
 
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<poseSize_; iter++)
 	{
 		temp = (pose_[iter] >> BIOLOID_SHIFT) + offsets_[iter];
@@ -132,11 +133,11 @@ void BioloidController::writePose()
 			temp = 0;
 		else if (temp > resolutions_[iter])
 			temp = resolutions_[iter];
-		Dxl.setTxPacketParameter( 2 + 3*iter + 0, id_[iter] );
-		Dxl.setTxPacketParameter( 2 + 3*iter + 1, (temp)&0xff );
-		Dxl.setTxPacketParameter( 2 + 3*iter + 2, (temp>>8)&0xff );
+		pDxl->setTxPacketParameter( 2 + 3*iter + 0, id_[iter] );
+		pDxl->setTxPacketParameter( 2 + 3*iter + 1, (temp)&0xff );
+		pDxl->setTxPacketParameter( 2 + 3*iter + 2, (temp>>8)&0xff );
 	}
-	Dxl.txrxPacket();
+	pDxl->txrxPacket();
 }
 
 
@@ -169,7 +170,7 @@ void BioloidController::loadOffsets(int * addr)
 		num_servos = numServos_;
 
 	int iter;
-	for (iter=0; iter<num_servos; iter++)
+	for (iter=0; iter < num_servos; iter++)
 	{
 		offsets_[iter] = addr[iter+1];
 	}
@@ -181,7 +182,7 @@ unsigned int BioloidController::setResolution(unsigned int id, unsigned int res)
 	if (res > 4096)
 		return 0;
 
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<numServos_; iter++)
 	{
 		if( id_[iter] == id )
@@ -226,7 +227,7 @@ unsigned int BioloidController::getPoseSize()
 /// Get a servo value from the current pose
 int BioloidController::getCurPose(int id)
 {
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<numServos_; iter++)
 	{
 		if( id_[iter] == id )
@@ -238,7 +239,7 @@ int BioloidController::getCurPose(int id)
 /// Get a servo value from the goal pose
 int BioloidController::getNextPose(int id)
 {
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<numServos_; iter++)
 	{
 		if( id_[iter] == id )
@@ -250,7 +251,7 @@ int BioloidController::getNextPose(int id)
 /// Set a servo value in the goal pose
 void BioloidController::setNextPose(int id, int pos)
 {
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<numServos_; iter++)
 	{
 		if( id_[iter] == id )
@@ -282,7 +283,7 @@ void BioloidController::interpolateSetup(unsigned int time)
 	readPose();
 
 	// Set deltas for each servo...
-	int iter;
+	unsigned int iter;
 	for(iter=0; iter<poseSize_; iter++)
 	{
 		//deltas_[iter] = (nextpose_[iter] - pose_[iter])/frames) + 1;
@@ -315,7 +316,7 @@ void BioloidController::interpolateStep()
 	lastframe_ = millis();
 
 	// Update intermediate goal position of each servo
-	int iter;
+	unsigned int iter;
 //	SerialUSB.print("[servo,diff,delta]\n  ");
 	for(iter=0; iter<poseSize_; iter++)
 	{
@@ -471,7 +472,7 @@ void BioloidController::RPM_Setup(rpm_page_t* array)
 	unsigned int num_servos = servo_ids[0];
 	setup(num_servos);
 
-	int iter;
+	unsigned int iter;
 //	SerialUSB.println("Setting Servo IDs");
 	for (iter=0; iter<numServos_; iter++)
 	{
@@ -661,13 +662,14 @@ bool BioloidController::pause(bool bolly)
 	{
 		bcState_ = RUNNING;
 	}
+	return bcState_;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Emergency Stop
 void BioloidController::kill(void)
 {
 	bcState_ = KILLED;
-	Dxl.writeByte(BROADCAST_ID, P_TORQUE_ENABLE, 0);
+	pDxl->writeByte(BROADCAST_ID, P_TORQUE_ENABLE, 0);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

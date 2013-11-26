@@ -1,5 +1,6 @@
 #include <CM9_BC.h>
-
+Dynamixel Dxl(3);
+Dynamixel *pDxl = &Dxl;
 int Offset_Calibration[] __FLASH__ = {4,0,0,0,0};
 
 bc_pose_t ServoIDs[] __FLASH__ = {4,1,2,3,4};

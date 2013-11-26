@@ -1,11 +1,12 @@
 #include "HaViMo2.h"
 
+extern Dynamixel *pDxl;
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void HaViMo2_Controller::capture(void)
 {
-	Dxl.writeByte(HaViMo2_ID, 0, 0);
+	pDxl->writeByte(HaViMo2_ID, 0, 0);
 }
 
 
@@ -15,8 +16,8 @@ bool HaViMo2_Controller::ready(void)
 	// Ping HaViMo2
 		// If responds => done processing last image, get results
 		// Else => still processing, wait/try again later
-	Dxl.ping(HaViMo2_ID);
-	if (Dxl.getResult()==(1<<COMM_RXSUCCESS))
+	pDxl->ping(HaViMo2_ID);
+	if (pDxl->getResult()==(1<<COMM_RXSUCCESS))
 	{
 		return true;
 	}
@@ -36,46 +37,46 @@ uint8_t HaViMo2_Controller::recover(void)
 
 	for (iter=0; iter<15; iter++)
 	{
-		Dxl.setTxPacketId(HaViMo2_ID);
-		Dxl.setTxPacketInstruction(INST_READ);
-		Dxl.setTxPacketParameter(0, ((iter+1)*16));
-		Dxl.setTxPacketParameter(1, 16);
-		Dxl.setTxPacketLength(2);
+		pDxl->setTxPacketId(HaViMo2_ID);
+		pDxl->setTxPacketInstruction(INST_READ);
+		pDxl->setTxPacketParameter(0, ((iter+1)*16));
+		pDxl->setTxPacketParameter(1, 16);
+		pDxl->setTxPacketLength(2);
 
-		Dxl.txrxPacket();
+		pDxl->txrxPacket();
 
 	// Dxl buffer is not cleared prior to RX
 	//  If not checking for result, will grab from last valid RX packet
-		if ( (Dxl.getResult()==(1<<COMM_RXSUCCESS)) &&
-				(Dxl.getRxPacketLength()==(16+2)) )
+		if ( (pDxl->getResult()==(1<<COMM_RXSUCCESS)) &&
+				(pDxl->getRxPacketLength()==(16+2)) )
 		{
-			if (Dxl.getRxPacketParameter(1)>0)
+			if (pDxl->getRxPacketParameter(1)>0)
 			{
 				hvm2rb.valid++;
 
-				hvm2rb.rb[hvm2rb.valid-1].Index=Dxl.getRxPacketParameter(0);
-				hvm2rb.rb[hvm2rb.valid-1].Color=Dxl.getRxPacketParameter(1);
+				hvm2rb.rb[hvm2rb.valid-1].Index=pDxl->getRxPacketParameter(0);
+				hvm2rb.rb[hvm2rb.valid-1].Color=pDxl->getRxPacketParameter(1);
 				hvm2rb.rb[hvm2rb.valid-1].NumPix=
 					(
-						(uint16_t)Dxl.getRxPacketParameter(2)+
-						((uint16_t)Dxl.getRxPacketParameter(3)<<8)
+						(uint16_t)pDxl->getRxPacketParameter(2)+
+						((uint16_t)pDxl->getRxPacketParameter(3)<<8)
 					);
 				hvm2rb.rb[hvm2rb.valid-1].SumX=
 					(
-						((uint32_t)Dxl.getRxPacketParameter(4)+
-						((uint32_t)Dxl.getRxPacketParameter(5)<<8)+
-						((uint32_t)Dxl.getRxPacketParameter(6)<<16))
+						((uint32_t)pDxl->getRxPacketParameter(4)+
+						((uint32_t)pDxl->getRxPacketParameter(5)<<8)+
+						((uint32_t)pDxl->getRxPacketParameter(6)<<16))
 					);
 				hvm2rb.rb[hvm2rb.valid-1].SumY=
 					(
-						((uint32_t)Dxl.getRxPacketParameter(8)+
-						((uint32_t)Dxl.getRxPacketParameter(9)<<8)+
-						((uint32_t)Dxl.getRxPacketParameter(10)<<16))
+						((uint32_t)pDxl->getRxPacketParameter(8)+
+						((uint32_t)pDxl->getRxPacketParameter(9)<<8)+
+						((uint32_t)pDxl->getRxPacketParameter(10)<<16))
 					);
-				hvm2rb.rb[hvm2rb.valid-1].MaxX=Dxl.getRxPacketParameter(12);
-				hvm2rb.rb[hvm2rb.valid-1].MinX=Dxl.getRxPacketParameter(13);
-				hvm2rb.rb[hvm2rb.valid-1].MaxY=Dxl.getRxPacketParameter(14);
-				hvm2rb.rb[hvm2rb.valid-1].MinY=Dxl.getRxPacketParameter(15);
+				hvm2rb.rb[hvm2rb.valid-1].MaxX=pDxl->getRxPacketParameter(12);
+				hvm2rb.rb[hvm2rb.valid-1].MinX=pDxl->getRxPacketParameter(13);
+				hvm2rb.rb[hvm2rb.valid-1].MaxY=pDxl->getRxPacketParameter(14);
+				hvm2rb.rb[hvm2rb.valid-1].MinY=pDxl->getRxPacketParameter(15);
 			}
 		}
  	}

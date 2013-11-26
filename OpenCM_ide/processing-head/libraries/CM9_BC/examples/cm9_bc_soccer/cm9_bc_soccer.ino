@@ -1,6 +1,7 @@
 #include <CM9_BC.h>
 #include "HelloRobo_RPM.h"		// Only legs of Type-A Humanoid
-
+Dynamixel Dxl(3);
+Dynamixel *pDxl = &Dxl;
 // Adjust for each bot
 int Offset_Calibration[] __FLASH__ = {12,0,0,0,0,0,0,0,0,0,0,0,0};
 
