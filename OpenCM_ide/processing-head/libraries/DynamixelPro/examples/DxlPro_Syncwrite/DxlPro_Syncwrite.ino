@@ -9,7 +9,7 @@
   24 Jun. 2013  ported to CM9  by ROBOTIS,.LTD.
 */
 #include "DynamixelPro.h"
-DynamixelPro DxlEx;
+DynamixelPro DxlEx(3);//DXL PRO(485) on Serial3(USART3)
 
 int itemp1[3];
 int itemp2[3];
