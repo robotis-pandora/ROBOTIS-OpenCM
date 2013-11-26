@@ -182,7 +182,7 @@
  * For olny OpenCM9.04 485 SHD Board that uses USART3 as DXL3 Bus
  * */
 #define PORT_TXRX_DIRECTION3	GPIOC
-#define PIN_TXRX_DIRECTION3		15
+#define PIN_TXRX_DIRECTION3		14
 
 #define PORT_DXL_TXD3			GPIOB
 #define PORT_DXL_RXD3			GPIOB
