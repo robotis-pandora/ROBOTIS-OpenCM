@@ -48,7 +48,7 @@
 
 
 void boardInit(void) {
-
+	afio_cfg_debug_ports(AFIO_DEBUG_SW_ONLY); //[ROBOTIS] 2013-07-17
 	//[ROBOTIS][CHANGE] add here if you want to initialize something
 	gpio_set_mode(GPIOB, 2, GPIO_OUTPUT_PP);
 	gpio_write_bit(GPIOB, 2,1); //LED off when start board

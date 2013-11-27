@@ -47,7 +47,7 @@
  * [ROBOTIS][CHANGE] CM-900 Do not have built-in button.
  * 2013-04-22
  * */
-/*#define BOARD_BUTTON_PIN        2//38*/
+#define BOARD_BUTTON_PIN        23//38
 #define BOARD_LED_PIN           16
 
 /* Number of USARTs/UARTs whose pins are broken out to headers */
