@@ -20,10 +20,14 @@ Dynamixel::Dynamixel(int dev_num) {
 
 		mTxPort = PORT_DXL_TXD;
 		mRxPort = PORT_DXL_RXD;
-		mDirPort = PORT_TXRX_DIRECTION;
+
 		mTxPin = PIN_DXL_TXD;
 		mRxPin = PIN_DXL_RXD;
+#ifndef BOARD_CM900
+		mDirPort = PORT_TXRX_DIRECTION;
 		mDirPin = PIN_TXRX_DIRECTION;
+#endif
+		
 		break;
 	case 2:
 		/*
