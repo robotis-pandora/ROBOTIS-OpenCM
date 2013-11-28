@@ -10,13 +10,15 @@
 #include <OLLO.h>
 OLLO myOLLO;
 
+
 void setup(){
-  myOLLO.begin(1, COLOR_SENSOR);//Gyro X Axis must be connected at port 2.
- // myOLLO.begin(2);//Gyro Y Axis must be connected at port 2.
+//myOLLO.begin( Port Number, sensor device index );
+  myOLLO.begin(1, COLOR_SENSOR);//Color sensor module must be connected to port 1.
+
 }
 void loop(){
   SerialUSB.print("RED ADC = ");
-  SerialUSB.print(myOLLO.read(1, COLOR_SENSOR, RED)); 
+  SerialUSB.print(myOLLO.read(1, COLOR_SENSOR, RED)); //myOLLO.read(port number, dev_index, color index)
   SerialUSB.print("  GREEN ADC = ");
   SerialUSB.print(myOLLO.read(1, COLOR_SENSOR, GREEN));
   SerialUSB.print("  BLUE ADC = ");

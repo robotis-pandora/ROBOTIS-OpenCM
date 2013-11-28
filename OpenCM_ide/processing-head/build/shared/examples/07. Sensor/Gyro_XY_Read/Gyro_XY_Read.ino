@@ -2,7 +2,7 @@
  OLLO Gyro(Sensor) XY Read example
  
  Read  x,y ADC value from OLLO Gyro Sensor module on OpenCM9.04(not CM-900).
- connect Gyro Sensor Module(GS-12) to port 1.
+ connect Gyro Sensor Module(GS-12) to port 1 and 2.
  
  You can buy IR Sensor DYNAMIXEL in ROBOTIS-SHOP
  http://www.robotis-shop-en.com/shop/step1.php?number=833&b_code=B20070914051413&c_code=C20100528062452
@@ -16,8 +16,8 @@
 OLLO myOLLO;
 
 void setup(){
-  myOLLO.begin(1);//Gyro X Axis must be connected at port 2.
-  myOLLO.begin(2);//Gyro Y Axis must be connected at port 2.
+  myOLLO.begin(1);//Gyro X Axis must be connected to port 1.
+  myOLLO.begin(2);//Gyro Y Axis must be connected to port 2.
 }
 void loop(){
   SerialUSB.print("X-Axis ADC = ");

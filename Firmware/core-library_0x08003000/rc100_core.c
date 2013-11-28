@@ -77,7 +77,7 @@ int rc100_hal_rx( unsigned char *pPacket, int numPacket )
 }
 
 void rc100Interrupt(byte data){
-	gbpPacketDataBuffer[gbPacketWritePointer++] = (uint8)USART2->regs->DR;
+	gbpPacketDataBuffer[gbPacketWritePointer++] = data;
 	gbPacketWritePointer = gbPacketWritePointer & 0x1F;
 
 }

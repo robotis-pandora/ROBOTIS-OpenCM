@@ -33,8 +33,26 @@ enum COLOR_INDEX {
 #define COLOR_GREEN 2
 #define COLOR_BLUE 3
 
+#define PORT1_SIG1 6
+#define PORT1_SIG2 7
+#define PORT1_ADC 2
+
+#define PORT2_SIG1 8
+#define PORT2_SIG2 9
+#define PORT2_ADC 3
+
+#define PORT3_SIG1 10
+#define PORT3_SIG2 11
+#define PORT3_ADC 0
+
+#define PORT4_SIG1 12
+#define PORT4_SIG2 13
+#define PORT4_ADC 1
+
 class OLLO {
 private:
+	void setColor(int colorIndex);
+	uint8 mportNumber;
 	uint8 mMot_plus;
 	uint8 mMot_minus;
 public:
@@ -48,6 +66,13 @@ public:
 	int read(int devNum);
 	int read(int devNum, int device_index);
 	int read(int devNum, int device_index, int sub_index);
+//	uint8 isGreen(uint8 port);
+//	uint8 isWhite(uint8 port);
+//	uint8 isBlue(uint8 port);
+//	uint8 isBlack(uint8 port);
+//	uint8 isRed(uint8 port);
+//	uint8 isYellow(uint8 port);
+//	uint8 detectColor(uint8 port);
 
 	void write(int devNum, uint8 leftVal,  uint8 rightVal);
 	void write(int devNum, uint8 leftVal, uint8 centerVal, uint8 rightVal);
@@ -59,7 +84,7 @@ public:
 	//Button Module
 	//void beginButton(int devNum,voidFuncPtr handler);
 	//int readColor(int devNum, int colorIndex);
-	void setColor(int colorIndex);
+
 };
 
 #endif /* OLLO_H_ */
