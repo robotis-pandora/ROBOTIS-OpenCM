@@ -386,6 +386,7 @@ uint8 isButtonPressed();
 uint8 waitForButtonPress(uint32 timeout_millis=0);
 #endif
 
+
 /**
  * Shift out a byte of data, one bit at a time.
  *
@@ -402,6 +403,11 @@ uint8 waitForButtonPress(uint32 timeout_millis=0);
  */
 
 void shiftOut(uint8 dataPin, uint8 clockPin, uint8 bitOrder, uint8 value);
-
+/*
+ * Convert integer value to sting value
+ * atoi() is included compiler's libraries but itoa() is not included
+ * itoa() added in Arduino-compatibles temporarily.
+ * */
+void itoa(int value, char* str, int base);
 
 #endif /* ARDUINO_COMPATIBLES_H_ */
