@@ -86,7 +86,15 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
 	{GPIOC,   NULL, NULL, 15, 0, ADCx}, /* D23/PC15 (User Button)*/
 	{GPIOB,   NULL, NULL, 10, 0, ADCx}, /* D24/PB10 */
 	{GPIOB,   NULL, NULL, 11, 0, ADCx}, /* D25/PB11 */
-
+/*
+ * Hidden pin map
+ * the below pins are used carefully, need to check schematic of OpenCM9.04
+ * */
+	{GPIOB,   NULL, NULL,  5, 0, ADCx}, /* D26/PB5 */
+	{GPIOB, TIMER4, NULL,  6, 1, ADCx}, /* D27/PB6 */
+	{GPIOB, TIMER4, NULL,  7, 2, ADCx}, /* D28/PB7 */
+	{GPIOA,   NULL, NULL, 13, 0, ADCx}, /* D29/PA13 */
+	{GPIOA,   NULL, NULL, 14, 0, ADCx} /* D30/PA14 */
 };
 /**
  * [ROBOTIS][CHANGE] 2013-04-22

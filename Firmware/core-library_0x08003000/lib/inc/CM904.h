@@ -51,7 +51,7 @@
 
 /* Total number of GPIO pins that are broken out to headers and
  * intended for general use. */
-#define BOARD_NR_GPIO_PINS      26//44
+#define BOARD_NR_GPIO_PINS      31//26//44
 
 /* Number of USARTs/UARTs whose pins are broken out to headers */
 //#define BOARD_NR_USARTS         3
