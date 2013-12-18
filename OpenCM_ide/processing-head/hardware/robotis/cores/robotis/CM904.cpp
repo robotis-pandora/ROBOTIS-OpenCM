@@ -90,11 +90,12 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
  * Hidden pin map
  * the below pins are used carefully, need to check schematic of OpenCM9.04
  * */
+	{GPIOA,   NULL, NULL, 13, 0, ADCx}, /* D29/PA13 JTAG SWDIO*/
+	{GPIOA,   NULL, NULL, 14, 0, ADCx}, /* D30/PA14 JTAG SWDCLK*/
 	{GPIOB,   NULL, NULL,  5, 0, ADCx}, /* D26/PB5 DXL DIR*/
 	{GPIOB, TIMER4, NULL,  6, 1, ADCx}, /* D27/PB6 DXL TXD*/
-	{GPIOB, TIMER4, NULL,  7, 2, ADCx}, /* D28/PB7 DXL RXD*/
-	{GPIOA,   NULL, NULL, 13, 0, ADCx}, /* D29/PA13 JTAG SWDIO*/
-	{GPIOA,   NULL, NULL, 14, 0, ADCx} /* D30/PA14 JTAG SWDCLK*/
+	{GPIOB, TIMER4, NULL,  7, 2, ADCx} /* D28/PB7 DXL RXD -> dont work as output and input*/
+
 };
 /**
  * [ROBOTIS][CHANGE] 2013-04-22

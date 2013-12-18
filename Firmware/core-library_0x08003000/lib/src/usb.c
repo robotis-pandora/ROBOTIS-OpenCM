@@ -355,8 +355,8 @@ uint32 usbSendBytes(const uint8* sendBuf, uint32 nCount) {
 		//TxDStringC("nCount = "); TxDHex8C(nCount);TxDStringC("\r\n");
 
 		 //wait until Tx is valid... this is really important delay. delay(1) also can be alternative.
-		while( ( _GetENDPOINT(VCOM_TX_ENDP) & EP_TX_VALID) == EP_TX_VALID );
-
+		//while( ( _GetENDPOINT(VCOM_TX_ENDP) & EP_TX_VALID) == EP_TX_VALID );
+		delay_us(1000);
 		//if length > 64bytes
 		if( nCount > VCOM_TX_EPSIZE){
 			UserToPMABufferCopy(sendBuf, VCOM_TX_ADDR, VCOM_TX_EPSIZE);
