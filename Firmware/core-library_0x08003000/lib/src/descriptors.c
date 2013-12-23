@@ -165,11 +165,13 @@ const uint8 usbVcomDescriptor_LangID[USB_DESCRIPTOR_STRING_LEN(1)] = {
     0x04
 };
 
-const uint8 usbVcomDescriptor_iManufacturer[USB_DESCRIPTOR_STRING_LEN(8)] = {
-    USB_DESCRIPTOR_STRING_LEN(8),
+const uint8 usbVcomDescriptor_iManufacturer[USB_DESCRIPTOR_STRING_LEN(16)] = {
+    USB_DESCRIPTOR_STRING_LEN(16),
     USB_DESCRIPTOR_TYPE_STRING,
-    'C', 0, 'M', 0, '-', 0, '9', 0, ////[ROBOTIS]changed to support cm-900 by sm6787@robotis.com
-    '0', 0, '0', 0, ' ', 0, ' ', 0
+    'R', 0, 'O', 0, 'B', 0, 'O', 0, ////[ROBOTIS]changed to support cm-900 by sm6787@robotis.com
+    'T', 0, 'I', 0, 'S', 0, ' ', 0,
+    'C', 0, 'O', 0, '.', 0, ',', 0,
+    'L', 0, 'T', 0, 'D', 0, '.', 0
 };
 
 /*
@@ -198,6 +200,15 @@ const uint8 usbVcomDescriptor_iProduct[USB_DESCRIPTOR_STRING_LEN(24)] = {
     'C', 0, 'O', 0, 'M', 0, ' ', 0,
     'P', 0, 'o', 0, 'r', 0, 't', 0
 };
-
+#if 0
+const uint8 usbVcomDescriptor_iSerial[USB_DESCRIPTOR_STRING_LEN(16)] = {
+    USB_DESCRIPTOR_STRING_LEN(16),
+    USB_DESCRIPTOR_TYPE_STRING,
+    '1', 0, '2', 0, '3', 0, '4', 0,  //[ROBOTIS]changed to support cm-900 by sm6787@robotis.com
+    '5', 0, '6', 0, '7', 0, '8', 0,
+    '9', 0, '0', 0, 'A', 0, 'B', 0,
+    '0', 0, '1', 0, '2', 0, '3', 0
+};
+#endif
 /*****************************************************************************
  *****************************************************************************/

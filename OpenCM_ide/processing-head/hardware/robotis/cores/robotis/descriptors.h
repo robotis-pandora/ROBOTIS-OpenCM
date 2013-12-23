@@ -215,9 +215,10 @@ extern const USB_Descriptor_Device usbVcomDescriptor_Device;
 extern const USB_Descriptor_Config usbVcomDescriptor_Config;
 
 extern const uint8 usbVcomDescriptor_LangID[USB_DESCRIPTOR_STRING_LEN(1)];
-extern const uint8 usbVcomDescriptor_iManufacturer[USB_DESCRIPTOR_STRING_LEN(8)];
+extern const uint8 usbVcomDescriptor_iManufacturer[USB_DESCRIPTOR_STRING_LEN(16)]; // 2013-12-20 ROBOTIS
 //[ROBOTIS]changed 8 ->24 to support cm-900 by sm6787@robotis.com
 extern const uint8 usbVcomDescriptor_iProduct[USB_DESCRIPTOR_STRING_LEN(24)];
+//extern const uint8 usbVcomDescriptor_iSerial[USB_DESCRIPTOR_STRING_LEN(16)]; //2013-12-20
 
 #if defined(__cplusplus)
   }

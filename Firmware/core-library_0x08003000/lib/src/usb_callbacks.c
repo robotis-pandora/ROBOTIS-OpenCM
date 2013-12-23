@@ -24,10 +24,11 @@ ONE_DESCRIPTOR Config_Descriptor = {
     0x43//sizeof(USB_Descriptor_Config)
 };
 
-ONE_DESCRIPTOR String_Descriptor[3] = {
+ONE_DESCRIPTOR String_Descriptor[4] = {
     {(uint8*)&usbVcomDescriptor_LangID,       USB_DESCRIPTOR_STRING_LEN(1)},
-    {(uint8*)&usbVcomDescriptor_iManufacturer,USB_DESCRIPTOR_STRING_LEN(8)}, //[ROBOTIS]changed to support cm-900 by sm6787@robotis.com
+    {(uint8*)&usbVcomDescriptor_iManufacturer,USB_DESCRIPTOR_STRING_LEN(16)}, //[ROBOTIS]changed to support cm-900 by sm6787@robotis.com
     {(uint8*)&usbVcomDescriptor_iProduct,     USB_DESCRIPTOR_STRING_LEN(24)}
+   // {(uint8*)&usbVcomDescriptor_iSerial,     USB_DESCRIPTOR_STRING_LEN(16)}
 };
 
 uint8 last_request = 0;
