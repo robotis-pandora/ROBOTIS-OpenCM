@@ -9,7 +9,8 @@
 
 void setup(){
   //Serial2 Serial initialize
-  SerialUSB.begin(); 
+  SerialUSB.begin();
+  pinMode(0, INPUT_ANALOG); // set pin 0 as analog input
 }
 
 void loop(){

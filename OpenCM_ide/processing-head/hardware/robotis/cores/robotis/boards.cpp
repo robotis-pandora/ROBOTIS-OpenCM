@@ -65,10 +65,14 @@ void init(void) {
     setupTimers();
     setupUSB();
     boardInit();
+    //[2014-01-14 ROBOTIS] prevent to null pointer exception
+    rb_init(USART2->rb, USART_RX_BUF_SIZE, USART2->rx_buf);
+	usart_disable(USART2);
+	//[2014-01-14 ROBOTIS] prevent to null pointer exception
 
 #ifdef CM9_DEBUG
     //for debug
-    gpio_set_mode(GPIOA, 2, GPIO_AF_OUTPUT_PP);
+  gpio_set_mode(GPIOA, 2, GPIO_AF_OUTPUT_PP);
  	gpio_set_mode(GPIOA, 3, GPIO_INPUT_FLOATING);
  	usart_init(USART2);
  	usart_set_baud_rate(USART2, STM32_PCLK1, 57600);
