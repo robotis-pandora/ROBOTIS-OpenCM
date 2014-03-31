@@ -1,4 +1,4 @@
-Copyright (C) 2012 ROBOTIS, Co., Ltd.
+﻿Copyright (C) 2012 ROBOTIS, Co., Ltd.
 
  ROBOTIS OpenCM License Notice
 
@@ -46,3 +46,6 @@ http://rxtx.qbang.org/wiki/index.php/Main_Page
 7. The OpenCM9.04 API Reference is based on Martin Mason CM-900 API Reference from Mount San Antonio College’s Physics 
 and Engineering Department. Martin Mason. We would like to extend our gratitude to Martin Mason for his contributions
 to the CM-9 series.
+
+
+
