@@ -22,7 +22,9 @@ volatile byte                   gbpPacketDataBuffer[16+1+16];
 volatile byte                   gbpPacket[PACKET_LENGTH+2];
 volatile byte                   gbNewPacket;
 volatile word                   gwZigbeeRxData;
+byte gbIRChannel;
 
+volatile byte                   check_mode;
 
 int rc100_hal_tx( unsigned char *pPacket, int numPacket );
 int rc100_hal_rx( unsigned char *pPacket, int numPacket );
@@ -36,9 +38,10 @@ byte CheckNewArrive(void);
 int rc100TxData(int data);
 int rc100RxCheck(void);
 int rc100RxData(void);
-
 byte RxDByteUart2(void);
 void TxDByteUart2(byte bTxdData);
+
+
 
 #ifdef __cplusplus
 }

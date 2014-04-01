@@ -19,8 +19,10 @@ RC100::~RC100() {
 
 }
 
-int RC100::begin(void){
-	return rc100Initialize(57600);
+void RC100::begin(int num){
+	if(num == 1) rc100Initialize(57600);
+	else if(num == 2) rc100Initialize(1900);
+	check_mode = num;
 }
 void RC100::end(void){
 	rc100Terminate();
@@ -29,7 +31,6 @@ int RC100::writeData(int data){
 	return rc100TxData(data);
 }
 void RC100::writeRaw(byte temp){
-
 	TxDByteUart2(temp);
 }
 byte RC100::readRaw(void){

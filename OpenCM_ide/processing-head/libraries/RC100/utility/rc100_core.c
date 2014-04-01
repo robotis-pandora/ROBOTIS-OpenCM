@@ -143,77 +143,112 @@ extern volatile byte                   gbPacketReadPointer ;
 
 int rc100RxCheck(void)
 {
+	byte bChannel = 0;
 	int RcvNum;
 	unsigned char checksum;
 	int i, j;
+	if(check_mode == 1){
+		if(gbRcvFlag == 1)
+			return 1;
 
-	if(gbRcvFlag == 1)
-		return 1;
-
-	// Fill packet buffer
-	if(gbRcvPacketNum < 6)
-	{
-		RcvNum = rc100_hal_rx( &gbRcvPacket[gbRcvPacketNum], (6 - gbRcvPacketNum) );
-		if( RcvNum != -1 )
-			gbRcvPacketNum += RcvNum;
-	}
-
-	// Find header
-	if(gbRcvPacketNum >= 2)
-	{
-		for( i=0; i<gbRcvPacketNum; i++ )
+		// Fill packet buffer
+		if(gbRcvPacketNum < 6)
 		{
-			if(gbRcvPacket[i] == 0xff)
+			RcvNum = rc100_hal_rx( &gbRcvPacket[gbRcvPacketNum], (6 - gbRcvPacketNum) );
+			if( RcvNum != -1 )
+				gbRcvPacketNum += RcvNum;
+		}
+
+		// Find header
+		if(gbRcvPacketNum >= 2)
+		{
+			for( i=0; i<gbRcvPacketNum; i++ )
 			{
-				if(i <= (gbRcvPacketNum - 2))
+				if(gbRcvPacket[i] == 0xff)
 				{
-					if(gbRcvPacket[i+1] == 0x55)
-						break;
+					if(i <= (gbRcvPacketNum - 2))
+					{
+						if(gbRcvPacket[i+1] == 0x55)
+							break;
+					}
 				}
 			}
-		}
 
-		if(i > 0)
-		{
-			if(i == gbRcvPacketNum)
+			if(i > 0)
 			{
-				// Can not find header
-				if(gbRcvPacket[i - 1] == 0xff)
-					i--;
-			}
-
-			// Remove data before header
-			for( j=i; j<gbRcvPacketNum; j++)
-			{
-				gbRcvPacket[j - i] = gbRcvPacket[j];
-			}
-			gbRcvPacketNum -= i;
-		}
-	}
-
-	// Verify packet
-	if(gbRcvPacketNum == 6)
-	{
-		if(gbRcvPacket[0] == 0xff && gbRcvPacket[1] == 0x55)
-		{
-			checksum = ~gbRcvPacket[3];
-			if(gbRcvPacket[2] == checksum)
-			{
-				checksum = ~gbRcvPacket[5];
-				if(gbRcvPacket[4] == checksum)
+				if(i == gbRcvPacketNum)
 				{
-					gwRcvData = (unsigned short)((gbRcvPacket[4] << 8) & 0xff00);
-					gwRcvData += gbRcvPacket[2];
-					gbRcvFlag = 1;
+					// Can not find header
+					if(gbRcvPacket[i - 1] == 0xff)
+						i--;
+				}
+
+				// Remove data before header
+				for( j=i; j<gbRcvPacketNum; j++)
+				{
+					gbRcvPacket[j - i] = gbRcvPacket[j];
+				}
+				gbRcvPacketNum -= i;
+			}
+		}
+
+		// Verify packet
+		if(gbRcvPacketNum == 6)
+		{
+			if(gbRcvPacket[0] == 0xff && gbRcvPacket[1] == 0x55)
+			{
+				checksum = ~gbRcvPacket[3];
+				if(gbRcvPacket[2] == checksum)
+				{
+					checksum = ~gbRcvPacket[5];
+					if(gbRcvPacket[4] == checksum)
+					{
+						gwRcvData = (unsigned short)((gbRcvPacket[4] << 8) & 0xff00);
+						gwRcvData += gbRcvPacket[2];
+						gbRcvFlag = 1;
+					}
 				}
 			}
+
+			gbRcvPacket[0] = 0x00;
+			gbRcvPacketNum = 0;
+		}
+	}
+////////////////////////////////////////////////
+	else if(check_mode == 2){
+		while(CheckNewArrive()){
+			gwZigbeeRxData = RxDByteUart2(); //TxD8Hex(bRxData);;
+		if(gbRcvPacketNum >= 3) gbRcvPacketNum = 0;
+
+		if(gwZigbeeRxData == 0xAA) { //0xAA는 헤더이므로 다음부터 데이터가 들어온다.
+			gbRcvPacketNum = 0;
 		}
 
-		gbRcvPacket[0] = 0x00;
-		gbRcvPacketNum = 0;
+		gbpPacket[gbRcvPacketNum++] = gwZigbeeRxData;
+
+		if(gbRcvPacketNum == 3)
+		{
+
+			if( (gbpPacket[0]==0xAA) && ((gbpPacket[1]&0x80)==0) && ((gbpPacket[2]&0x80)==0) )
+			{
+				if( ((gbpPacket[1]+(gbpPacket[2]&0x0F)+(gbpPacket[2]>>4))&0x07)==0x07 )
+				{
+					if( gbpPacket[2] & 0x08 ) bChannel = 1;
+					if( gbpPacket[2] & 0x04 ) bChannel|= 0x02;
+					if( gbpPacket[2] & 0x02 ) bChannel|= 0x04;
+
+					bChannel++;
+					if( (gbIRChannel==0) || (bChannel==gbIRChannel) )
+					{
+						if( gbpPacket[2] & 0x01 )	gbpPacket[1] |= 0x80;
+						gwRcvData = gbpPacket[1];
+						gbRcvFlag = 1;
+					}
+				}
+			}
+		  }
+	   }
 	}
-
-
 	return gbRcvFlag;
 }
 
@@ -222,3 +257,4 @@ int rc100RxData(void)
 	gbRcvFlag = 0;
 	return (int)gwRcvData;
 }
+

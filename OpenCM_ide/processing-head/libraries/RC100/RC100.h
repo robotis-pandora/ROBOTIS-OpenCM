@@ -27,12 +27,11 @@ public:
 	RC100();
 	virtual ~RC100();
 
-	int begin(void);
+	void begin(int num);
 	void end(void);
 	int writeData(int data);
 	int available(void);
 	int readData(void);
-
 	void writeRaw(byte temp);
 	byte readRaw(void);
 };

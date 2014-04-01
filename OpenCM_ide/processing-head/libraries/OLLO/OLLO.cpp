@@ -2,12 +2,17 @@
  * OLLO.cpp
  *
  *  Created on: 2013. 5. 30.
- *      Author: ROBOTIS,.LTD.
+ *      Author: ROBOTIS CO,.LTD.
  */
 
 #include "OLLO.h"
 
 #include "Arduino-compatibles.h"
+
+uint8 before_color_num =0;
+uint8 before_color_cnt =0;
+uint8 after_color_value = 0;
+uint8 bColorResult =0;
 
 OLLO::OLLO() {
 	// TODO Auto-generated constructor stub
@@ -17,6 +22,33 @@ OLLO::OLLO() {
 OLLO::~OLLO() {
 	// TODO Auto-generated destructor stub
 }
+int average_cnt = 0;
+word long gwTheRmistor[108] = {
+  67747,64577,61571,58721,
+  56017,53452,51018,48707,
+  46513,44430,42450,40569,
+  38781,37081,35465,33927,
+  32464,31072,29747,28485,
+  27283,26138,25048,24008, 23017,
+  22072,21171,20311,19491,
+  18708,17960,17246,16565,
+  15913,15291,14696,14128,
+  13584,13064,12567,12091,
+  11636,11200,10782,10383,
+  10000, 9633, 9282,  8945,
+  8622, 8313, 8016, 7731,
+  7458, 7195, 6944, 6702,
+  6470, 6247, 6033, 5828,
+  5630, 5440, 5258, 5082,
+  4914, 4751, 4595, 4445,
+  4300, 4161, 4027, 3898,
+  3774, 3654, 3539, 3427,
+  3320, 3217, 3118, 3022,
+  2929, 2840, 2754, 2671,
+  2590, 2513, 2438, 2366,
+  2296, 2229, 2164, 2101,
+};
+
 
 void OLLO::begin(int devNum){
 	if( devNum == 0 ){
@@ -57,11 +89,12 @@ void OLLO::begin(int devNum, int device_index){ //MAGNETIC SENSOR, Button, IR Se
 	mMot_minus = 0;
 	switch(devNum){
 	case 1:
-		if(device_index == MAGNETIC_SENSOR){
-			pinMode(PORT1_ADC, INPUT); //digital input
-		}else if(device_index == TOUCH_SENSOR){
+		if(device_index == TOUCH_SENSOR || device_index == PIR_SENSOR || device_index == Magnetic_SENSOR){
 			pinMode(PORT1_ADC, INPUT_PULLUP);
-		}else{
+		}else if(device_index == Ultrasonic_SENSOR || device_index == COLOR_SENSOR || device_index == Temperature_SENSOR ){
+			pinMode(PORT1_ADC, INPUT_ANALOG);
+		}
+		else{
 			pinMode(PORT1_ADC, INPUT_ANALOG); //ADC input
 		}
 
@@ -73,14 +106,13 @@ void OLLO::begin(int devNum, int device_index){ //MAGNETIC SENSOR, Button, IR Se
 		}
 		break;
 	case 2:
-		if(device_index == MAGNETIC_SENSOR){
-			pinMode(PORT2_ADC, INPUT); //digital input
-		}else if(device_index == TOUCH_SENSOR){
+		if(device_index == TOUCH_SENSOR || device_index == PIR_SENSOR || device_index == Magnetic_SENSOR){
 			pinMode(PORT2_ADC, INPUT_PULLUP);
+		}else if(device_index == Ultrasonic_SENSOR || device_index == COLOR_SENSOR || device_index == Temperature_SENSOR ){
+			pinMode(PORT2_ADC, INPUT_ANALOG);//ADC input
 		}else{
 			pinMode(PORT2_ADC, INPUT_ANALOG);//ADC input
 		}
-
 
 		pinMode(PORT2_SIG1, OUTPUT); //SIG1
 		pinMode(PORT2_SIG2, OUTPUT); //SIG2
@@ -90,14 +122,13 @@ void OLLO::begin(int devNum, int device_index){ //MAGNETIC SENSOR, Button, IR Se
 		}
 		break;
 	case 3:
-		if(device_index == MAGNETIC_SENSOR){
-			pinMode(PORT3_ADC, INPUT); //digital input
-		}else if(device_index == TOUCH_SENSOR){
+		if(device_index == TOUCH_SENSOR || device_index == PIR_SENSOR || device_index == Magnetic_SENSOR){
 			pinMode(PORT3_ADC, INPUT_PULLUP);
+		}else if(device_index == Ultrasonic_SENSOR || device_index == COLOR_SENSOR || device_index == Temperature_SENSOR ){
+			pinMode(PORT3_ADC, INPUT_ANALOG);//ADC input
 		}else{
 			pinMode(PORT3_ADC, INPUT_ANALOG);//ADC input
 		}
-
 
 		pinMode(PORT3_SIG1, OUTPUT); //SIG1
 		pinMode(PORT3_SIG2, OUTPUT); //SIG2
@@ -107,14 +138,13 @@ void OLLO::begin(int devNum, int device_index){ //MAGNETIC SENSOR, Button, IR Se
 		}
 		break;
 	case 4:
-		if(device_index == MAGNETIC_SENSOR){
-			pinMode(PORT4_ADC, INPUT); //digital input
-		}else if(device_index == TOUCH_SENSOR){
+		if(device_index == TOUCH_SENSOR || device_index == PIR_SENSOR || device_index == Magnetic_SENSOR ){
 			pinMode(PORT4_ADC, INPUT_PULLUP);
+		}else if(device_index == Ultrasonic_SENSOR || device_index == COLOR_SENSOR || device_index == Temperature_SENSOR ){
+			pinMode(PORT4_ADC, INPUT_ANALOG);//ADC input
 		}else{
 			pinMode(PORT4_ADC, INPUT_ANALOG);//ADC input
 		}
-
 
 		pinMode(PORT4_SIG1, OUTPUT); //SIG1
 		pinMode(PORT4_SIG2, OUTPUT); //SIG2
@@ -183,6 +213,14 @@ int OLLO::read(int devNum){ // general sensor reading method
 }
 int OLLO::read(int devNum, int device_index){ // IR SENSOR, Button, MAGNETIC SENSOR, and etc...
 	int adcValue = 0;
+
+	signed int scount;
+	word  vvalue = 0;
+	word analogValue;
+	int distance_value = 0;
+	int dis_value = 0;
+
+	signed int average_value = 0;
 	if( devNum == 0 ){
 		return 0;
 	}
@@ -194,8 +232,29 @@ int OLLO::read(int devNum, int device_index){ // IR SENSOR, Button, MAGNETIC SEN
 			adcValue = analogRead(PORT1_ADC);
 			digitalWrite(PORT1_SIG2, LOW);
 			return adcValue;
-		}else if(device_index == MAGNETIC_SENSOR || device_index == TOUCH_SENSOR  ){
+		}else if(device_index == Magnetic_SENSOR || device_index == TOUCH_SENSOR  || device_index == PIR_SENSOR){
 			return digitalRead(PORT1_ADC);
+		}else if(device_index == Ultrasonic_SENSOR){
+			distance_value = (int)analogRead(PORT1_ADC);
+			dis_value = (((distance_value * 0.24)/4) - 3);
+			average_cnt++;
+			average_value+=dis_value;
+			if(average_cnt >= 100){
+				average_value/=100;
+				average_cnt = 0;
+			}
+			  return average_value;
+		}else if(device_index == Temperature_SENSOR){
+			analogValue = analogRead(PORT1_ADC);
+			vvalue = (4095 - analogValue) * 10000 /analogValue;
+			for(scount = -20; scount < 140; scount++){
+				if(vvalue > gwTheRmistor[scount +20]){
+				      return scount;
+				}
+			}
+		}
+		else if(device_index == COLOR_SENSOR){
+			return OLLO::detectColor(1);
 		}else{
 			return (int)analogRead(PORT1_ADC);
 		}
@@ -204,24 +263,66 @@ int OLLO::read(int devNum, int device_index){ // IR SENSOR, Button, MAGNETIC SEN
 		if(device_index == IR_SENSOR){
 			digitalWrite(PORT2_SIG2, HIGH);
 			delayMicroseconds(15);
-			adcValue = analogRead(PORT2_ADC);
+			adcValue = analogRead(PORT1_ADC);
 			digitalWrite(PORT2_SIG2, LOW);
 			return adcValue;
-		}else if(device_index == MAGNETIC_SENSOR || device_index == TOUCH_SENSOR ){
+		}else if(device_index == Magnetic_SENSOR || device_index == TOUCH_SENSOR || device_index == PIR_SENSOR){
 			return digitalRead(PORT2_ADC);
-		}else{
+		}else if(device_index == Ultrasonic_SENSOR){
+			distance_value = (int)analogRead(PORT1_ADC);
+			dis_value = (((distance_value * 0.24)/4) - 3);
+			average_cnt++;
+			average_value+=dis_value;
+			if(average_cnt >= 100){
+				average_value/=100;
+				average_cnt = 0;
+			}
+			  return average_value;
+		}else if(device_index == COLOR_SENSOR){
+			return OLLO::detectColor(2);
+		}
+		else if(device_index == Temperature_SENSOR){
+			analogValue = analogRead(PORT2_ADC);
+			vvalue = (4095 - analogValue) * 10000 /analogValue;
+			for(scount = -20; scount < 140; scount++){
+				if(vvalue > gwTheRmistor[scount +20]){
+				      return scount;
+				}
+			}
+		}
+		else{
 			return (int)analogRead(PORT2_ADC);
 		}
 		break;
 	case 3:
 		if(device_index == IR_SENSOR){
-			digitalWrite(11, HIGH);
+			digitalWrite(PORT3_SIG2, HIGH);
 			delayMicroseconds(15);
-			adcValue = analogRead(PORT3_ADC);
-			digitalWrite(11, LOW);
+			adcValue = analogRead(PORT1_ADC);
+			digitalWrite(PORT3_SIG2, LOW);
 			return adcValue;
-		}else if(device_index == MAGNETIC_SENSOR || device_index == TOUCH_SENSOR ){
+		}else if(device_index == Magnetic_SENSOR || device_index == TOUCH_SENSOR || device_index == PIR_SENSOR){
 			return digitalRead(PORT3_ADC);
+		}else if(device_index == Ultrasonic_SENSOR){
+			distance_value = (int)analogRead(PORT1_ADC);
+			dis_value = (((distance_value * 0.24)/4) - 3);
+			average_cnt++;
+			average_value+=dis_value;
+			if(average_cnt >= 100){
+				average_value/=100;
+				average_cnt = 0;
+			}
+			  return average_value;
+		}else if(device_index == Temperature_SENSOR){
+			analogValue = analogRead(PORT3_ADC);
+			vvalue = (4095 - analogValue) * 10000 /analogValue;
+			for(scount = -20; scount < 140; scount++){
+				if(vvalue > gwTheRmistor[scount +20]){
+				      return scount;
+				}
+			}
+		}else if(device_index == COLOR_SENSOR){
+			return OLLO::detectColor(3);
 		}else{
 			return (int)analogRead(PORT3_ADC);
 		}
@@ -230,11 +331,31 @@ int OLLO::read(int devNum, int device_index){ // IR SENSOR, Button, MAGNETIC SEN
 		if(device_index == IR_SENSOR){
 			digitalWrite(PORT4_SIG2, HIGH);
 			delayMicroseconds(15);
-			adcValue = analogRead(PORT4_ADC);
+			adcValue = analogRead(PORT1_ADC);
 			digitalWrite(PORT4_SIG2, LOW);
 			return adcValue;
-		}else if(device_index == MAGNETIC_SENSOR || device_index == TOUCH_SENSOR ){
+		}else if(device_index == Magnetic_SENSOR || device_index == TOUCH_SENSOR || device_index == PIR_SENSOR ){
 			return digitalRead(PORT4_ADC);
+		}else if(device_index == Ultrasonic_SENSOR){
+			distance_value = (int)analogRead(PORT1_ADC);
+			dis_value = (((distance_value * 0.24)/4) - 3);
+			average_cnt++;
+			average_value+=dis_value;
+			if(average_cnt >= 100){
+				average_value/=100;
+				average_cnt = 0;
+			}
+			  return average_value;
+		}else if(device_index == Temperature_SENSOR){
+			analogValue = analogRead(PORT1_ADC);
+			vvalue = (4095 - analogValue) * 10000 /analogValue;
+			for(scount = -20; scount < 140; scount++){
+				if(vvalue > gwTheRmistor[scount +20]){
+				      return scount;
+				}
+			}
+		}else if(device_index == COLOR_SENSOR){
+			OLLO::detectColor(4);
 		}else{
 			return (int)analogRead(PORT4_ADC);
 		}
@@ -261,136 +382,30 @@ int OLLO::read(int devNum, int device_index, int sub_index){ //COLOR SENSOR
 		 digitalWrite(PORT1_SIG1, mMot_minus);
 		 digitalWrite(PORT1_SIG2, mMot_plus);
 		 delay(20); // after 20ms, read analog
-		 return (int)analogRead(PORT1_ADC);
+		 return (((int)analogRead(PORT1_ADC))/4);
 
 	case 2:
 		digitalWrite(PORT2_SIG1, mMot_minus);
 		digitalWrite(PORT2_SIG2, mMot_plus);
 		delay(20);
-		return (int)analogRead(PORT2_ADC);
+		return ((int)analogRead(PORT2_ADC));
 
 	case 3:
 		digitalWrite(PORT3_SIG1, mMot_minus);
 		digitalWrite(PORT3_SIG2, mMot_plus);
 		delay(20);
-		return (int)analogRead(PORT3_ADC);
+		return ((int)analogRead(PORT3_ADC)/4);
 
 	case 4:
 		digitalWrite(PORT4_SIG1, mMot_minus);
 		digitalWrite(PORT4_SIG2, mMot_plus);
 		delay(20);
-		return (int)analogRead(PORT4_ADC);
+		return ((int)analogRead(PORT4_ADC)/4);
 
 	default:
 		return 0;
 	}
 }
-/*
-uint8 OLLO::detectColor(uint8 port){
-
-	int temp_red,temp_green,temp_blue;
-
-	temp_red = 0;
-	temp_green = 0;
-	temp_blue= 0;
-	int lColor[3]= {0,0,0};
-	int lRed,lGreen,lBlue;
-	uint8 bMaxColor, bMinColor, bColorResult;
-	bMaxColor=0;
-	bMinColor=0;
-	bColorResult=0;
-	//int i=0,j=0;
-	//uint8 bColorResult=0;
-	//for(i=0; i < 3; i++)
-	{
-		lRed = this->read(port, COLOR_SENSOR, RED);
-	}
-	//for(i=0; i < 3; i++)
-	{
-		lGreen = (this->read(port, COLOR_SENSOR, GREEN)+1) * 11 / 10;
-	}
-	//for(i=0; i < 3; i++)
-	{
-		lBlue = this->read(port, COLOR_SENSOR, BLUE);
-	}
-	Serial2.print("lRed = "); Serial2.print(lRed);
-	Serial2.print("	 lGreen = "); Serial2.print(lGreen);
-	Serial2.print("  lBlue = "); Serial2.print(lBlue);
-    if(lRed >= lGreen && lRed >= lBlue)
-    {
-           bMaxColor = 1;
-           lColor[0] = lRed;
-    }
-    else if(lGreen >= lRed && lGreen >= lBlue)
-    {
-           bMaxColor = 2;
-           lColor[0] = lGreen;
-    }
-    else if(lBlue >= lRed && lBlue >= lGreen)
-    {
-           bMaxColor = 3;
-           lColor[0] = lBlue;
-    }
-    if(lRed <= lGreen && lRed <= lBlue)
-    {
-           bMinColor = 1;
-           lColor[2] = lRed;
-    }
-    else if(lGreen <= lRed && lGreen <= lBlue)
-    {
-           bMinColor = 2;
-           lColor[2] = lGreen;
-    }
-    else if(lBlue <= lRed && lBlue <= lGreen)
-    {
-           bMinColor = 3;
-           lColor[2] = lBlue;
-    }
-    lColor[1] = lRed + lGreen + lBlue - lColor[0] - lColor[2];
-
-    if(lColor[2] > 300 || (lColor[2] > 250 && (lColor[0] / (lColor[0] - lColor[2])) > 4))// && lColor[0] < 200)
-    {
-           bColorResult = 1; // white
-           //TxDString("WHITE\r\n");
-    }
-    else if(bMaxColor == 3 && lBlue > lGreen + 10 && lColor[0] / (lColor[0] - lColor[2]) < 5 && lColor[2] < 200 )// && lBlue > lRed + 3 && lRed < 20 && lGreen < 20)
-    {
-           bColorResult = 5; // blue
-           //TxDString("BLUE\r\n");
-    }
-    else if(lColor[0] < 60 || (lColor[0] < 120 && lColor[0] / (lColor[0] - lColor[2]) > 5))//lRed < 5 && lGreen < 5 && lBlue < 5)// && lColor[0] - lColor[2] < 30)
-    {
-           bColorResult = 2; // black
-          // TxDString("BLACK\r\n");
-    }
-    else if(bMaxColor == 1 && lColor[0] / (lColor[2] + 1) >= 2 && lColor[1] - lColor[2] < 50lRed > lGreen + 40 && lGreen < lBlue + 5 && lRed > 80 )
-    {
-           bColorResult = 3; // red
-          // TxDString("RED\r\n");
-    }
-    else if(bMaxColor == 2 && lColor[0] - lColor[2] > 2 && lColor[0] < 300lGreen > lBlue + 3 && lGreen > lRed + 3 && lRed < 20)//lGreen < 5000)
-    {
-           bColorResult = 4; // green
-          // TxDString("GREEN\r\n");
-    }
-
-    else if(bMinColor == 3 && (lColor[1] / lColor[2] > 1 || lColor[1] - lColor[2] >= 50))//lRed-lBlue > 20 && lGreen-lBlue > 20 && lRed < 120)
-    {
-           bColorResult = 6; // yellow
-           //TxDString("YELLOW\r\n");
-    }
-    else
-    {
-           bColorResult = 0; // unknown
-          // TxDString("\r\n");
-    }
-
-    Serial2.print("  bColorResult = "); Serial2.println(bColorResult);
-
-
-	return bColorResult;
-
-}*/
 void OLLO::writeLED(int devNum, uint8 leftVal, uint8 rightVal ){
 	if( leftVal >1 || rightVal >1 || devNum == 0 ){
 		return;
@@ -497,3 +512,119 @@ void OLLO::setColor(int colorIndex){
 		}
 
 }
+
+
+int OLLO::detectColor(uint8 port){
+
+	int temp_red,temp_green,temp_blue;
+
+	temp_red = 0;
+	temp_green = 0;
+	temp_blue= 0;
+	int lColor[3]= {0,0,0};
+	int lRed,lGreen,lBlue;
+	int bMaxColor, bMinColor, bColorResult;
+	bMaxColor=0;
+	bMinColor=0;
+	bColorResult=0;
+
+	lRed = this->read(port, COLOR_SENSOR, RED);
+//for(i=0; i < 3; i++)
+
+	lGreen = (this->read(port, COLOR_SENSOR, GREEN));
+//for(i=0; i < 3; i++)
+
+	lBlue = this->read(port, COLOR_SENSOR, BLUE);
+
+	if(lRed >= lGreen && lRed >= lBlue)
+	{
+	       bMaxColor = 1;
+	       lColor[0] = lRed;
+	}
+	else if(lGreen >= lRed && lGreen >= lBlue)
+	{
+	       bMaxColor = 2;
+	       lColor[0] = lGreen;
+	}
+
+	else if(lBlue >= lRed && lBlue >= lGreen)
+	{
+	       bMaxColor = 3;
+	       lColor[0] = lBlue;
+	}
+	if(lRed <= lGreen && lRed <= lBlue)
+	{
+	       bMinColor = 1;
+	       lColor[2] = lRed;
+	}
+	else if(lGreen <= lRed && lGreen <= lBlue)
+	{
+	       bMinColor = 2;
+	       lColor[2] = lGreen;
+	}
+
+	else if(lBlue <= lRed && lBlue <= lGreen)
+	{
+	       bMinColor = 3;
+	       lColor[2] = lBlue;
+	}
+
+	lColor[1] = lRed + lGreen + lBlue - lColor[0] - lColor[2];
+
+	u32 RtoB = lRed * 100 / lBlue;
+	u32 GtoB = lGreen * 100 / lBlue;
+	u32 GtoR = lGreen * 100 / lRed;
+
+
+	if(lColor[0] < 90 || (lColor[0] < 180 && RtoB > 60 && (GtoB < 110 || GtoR < 130) && (GtoB + GtoR < 230)) && lColor[2] * 100 / lColor[0] > 75)
+	       bColorResult = 2; // black
+	else if((lColor[2] > 550) || ((lColor[2] > 200) && (lColor[0] > 300) && (lColor[2] * 100 / lColor[0] > 75) && (GtoB < 105)))
+	       bColorResult = 1; // white
+	else if(RtoB > 170 && GtoB > 130)
+	       bColorResult = 6; // yellow
+	else if(RtoB > 170 && GtoB <= 130)
+	       bColorResult = 3; // red
+	else if(GtoB > 90 && GtoR >= 110)
+	       bColorResult = 4; // green
+	else if(RtoB < 70 && GtoB <= 85)
+	       bColorResult = 5; // blue
+	else
+	       bColorResult = 0; // unknown
+
+
+
+		if(bColorResult == before_color_num){
+			before_color_cnt++;
+			if(before_color_cnt >= 10){
+				before_color_cnt = 0;
+				return bColorResult;
+			}
+		}
+		else{
+			before_color_cnt = 0;
+		}
+
+	before_color_num = bColorResult;	
+	return 0;
+}
+
+
+int OLLO::color_chk(){
+	if(bColorResult != 0){
+		if(bColorResult == before_color_num){
+			before_color_cnt++;
+			if(before_color_cnt >= 10){
+				before_color_cnt = 0;
+				return  bColorResult;
+			}
+		}
+		else{
+			before_color_cnt = 0;
+		//	bColorResult = 0;
+			return 0;
+		}
+	}
+	before_color_num = bColorResult;
+	return 0;
+}
+

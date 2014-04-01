@@ -2,12 +2,16 @@
  * OLLO.h For CM-904(new CM9 Series board)
  *
  *  Created on: 2013. 5. 30.
- *      Author: ROBOTIS,.LTD.
+ *      Author: ROBOTIS CO,.LTD.
  */
 
 #ifndef OLLO_H_
 #define OLLO_H_
 #include "libpandora_types.h"
+
+
+
+
 
 enum OLLO_DEVICE_INDEX {
     IR_SENSOR,
@@ -15,13 +19,14 @@ enum OLLO_DEVICE_INDEX {
     GYRO_SENOSR,
     DMS_SENSOR,
     PIR_SENSOR,
-    MAGNETIC_SENSOR,
+    Magnetic_SENSOR,
     COLOR_SENSOR,
-    ULTRASONIC_SENSOR,
-    LED_DISPLAY
+    Ultrasonic_SENSOR,
+    LED_DISPLAY,
+    Temperature_SENSOR
 };
 enum COLOR_INDEX {
-    RED,
+    RED =1 ,
     GREEN,
     BLUE,
     YELLOW,
@@ -29,6 +34,8 @@ enum COLOR_INDEX {
     BLACK,
     WHITE
 };
+
+
 #define COLOR_RED 1
 #define COLOR_GREEN 2
 #define COLOR_BLUE 3
@@ -51,7 +58,6 @@ enum COLOR_INDEX {
 
 class OLLO {
 private:
-	void setColor(int colorIndex);
 	uint8 mportNumber;
 	uint8 mMot_plus;
 	uint8 mMot_minus;
@@ -85,6 +91,9 @@ public:
 	//void beginButton(int devNum,voidFuncPtr handler);
 	//int readColor(int devNum, int colorIndex);
 
+	int detectColor(uint8 port);
+	int color_chk();
+	void setColor(int colorIndex);
 };
 
 #endif /* OLLO_H_ */
