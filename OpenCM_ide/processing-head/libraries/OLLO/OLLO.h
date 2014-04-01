@@ -13,19 +13,20 @@
 
 
 
-enum OLLO_DEVICE_INDEX {
+typedef enum OLLO_DEVICE_INDEX {
     IR_SENSOR,
     TOUCH_SENSOR,
     GYRO_SENOSR,
     DMS_SENSOR,
     PIR_SENSOR,
-    Magnetic_SENSOR,
+    MAGNETIC_SENSOR,
     COLOR_SENSOR,
-    Ultrasonic_SENSOR,
+    ULTRASONIC_SENSOR,
     LED_DISPLAY,
-    Temperature_SENSOR
-};
-enum COLOR_INDEX {
+    TEMPERATURE_SENSOR
+}OlloDeviceIndex;
+
+typedef enum COLOR_INDEX {
     RED =1 ,
     GREEN,
     BLUE,
@@ -33,7 +34,7 @@ enum COLOR_INDEX {
     ORANGE,
     BLACK,
     WHITE
-};
+}ColorIndex;
 
 
 #define COLOR_RED 1
@@ -61,17 +62,21 @@ private:
 	uint8 mportNumber;
 	uint8 mMot_plus;
 	uint8 mMot_minus;
+	int detectColor(uint8 port);
+		//int color_chk();
+	void setColor(ColorIndex colorIndex);
+	int read(int devNum, OlloDeviceIndex device_index, ColorIndex sub_index);
 public:
 	OLLO();
 	virtual ~OLLO();
 	//General 3PIN sensors
 	void begin(int devNum);
-	void begin(int devNum, int device_index);
-	void begin(int devNum, int device_index, voidFuncPtr handler);
+	void begin(int devNum, OlloDeviceIndex device_index);
+	void begin(int devNum, OlloDeviceIndex device_index, voidFuncPtr handler);
 
 	int read(int devNum);
-	int read(int devNum, int device_index);
-	int read(int devNum, int device_index, int sub_index);
+	int read(int devNum, OlloDeviceIndex device_index);
+
 //	uint8 isGreen(uint8 port);
 //	uint8 isWhite(uint8 port);
 //	uint8 isBlue(uint8 port);
@@ -91,9 +96,7 @@ public:
 	//void beginButton(int devNum,voidFuncPtr handler);
 	//int readColor(int devNum, int colorIndex);
 
-	int detectColor(uint8 port);
-	int color_chk();
-	void setColor(int colorIndex);
+
 };
 
 #endif /* OLLO_H_ */
